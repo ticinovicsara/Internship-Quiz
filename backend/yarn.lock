@@ -1593,7 +1593,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:^11.0.1":
+"@nestjs/core@npm:^11.0.12":
   version: 11.0.12
   resolution: "@nestjs/core@npm:11.0.12"
   dependencies:
@@ -3090,7 +3090,7 @@ __metadata:
     "@eslint/js": "npm:^9.18.0"
     "@nestjs/cli": "npm:^11.0.0"
     "@nestjs/common": "npm:^11.0.12"
-    "@nestjs/core": "npm:^11.0.1"
+    "@nestjs/core": "npm:^11.0.12"
     "@nestjs/platform-express": "npm:^11.0.1"
     "@nestjs/schematics": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.0.1"
