@@ -34,7 +34,7 @@ model Question {
 }
 
 enum QuestionType {
-  ABC
+  MULTIPLE
   FILL_IN_THE_BLANK
   MATCHING
   SLIDER
