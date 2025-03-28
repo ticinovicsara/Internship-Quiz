@@ -1,44 +1,34 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prismaService: PrismaService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
-  async adminPasswordLogin(email: string, password: string) {
-    if (!email) {
-      throw new BadRequestException('Email is required');
-    }
-
-    if (!password) {
-      throw new BadRequestException('Password is required');
-    }
-
-    const admin = await this.prismaService.admin.finUnique({
-      where: { email },
+  async register(username: string, email: string, password: string) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return this.userService.create({
+      username,
+      email,
+      password: hashedPassword,
     });
+  }
 
-    if (!admin) {
-      throw new BadRequestException('User not found');
-    }
+  async login(username: string, password: string) {
+    const user = await this.userService.findByEmail(username);
 
-    const passwordMatch = await bcrypt.compare(password, admin.password);
-
-    if (!passwordMatch) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new BadRequestException('Invalid credentials');
     }
 
-    const accessToken = this.jwtService.sign({
-      id: admin.id,
-      email: admin.email,
-      role: 'admin',
-    });
-
-    return accessToken;
+    return {
+      access_token: this.jwtService.sign({ userId: user.id, role: user.role }),
+    };
   }
 }

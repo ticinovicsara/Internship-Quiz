@@ -8,10 +8,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() { email, password }) {
-    const accessToken = await this.authService.adminPasswordLogin(
-      email,
-      password,
-    );
+    const accessToken = await this.authService.login(email, password);
 
     return {
       access_token: accessToken,

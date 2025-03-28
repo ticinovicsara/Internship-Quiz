@@ -1,33 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { Quiz } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class QuizService {
-  private quizzes = [];
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.quizzes;
+  async findAll(): Promise<Quiz[]> {
+    return this.prisma.quiz.findMany({
+      include: {
+        category: true,
+        questions: true,
+        scores: true,
+      },
+    });
   }
 
-  findQuiz(title: string) {
-    return this.quizzes.find((quiz) => quiz.title === title);
+  async findQuiz(title: string): Promise<Quiz | null> {
+    return this.prisma.quiz.findFirst({
+      where: { title },
+      include: {
+        category: true,
+        questions: true,
+        scores: true,
+      },
+    });
   }
 
-  create(quizData) {
-    const newQuiz = { id: Date.now().toString(), ...quizData };
-    this.quizzes.push(newQuiz);
-    return newQuiz;
+  async create(data: { title: string; categoryId: string }): Promise<Quiz> {
+    return this.prisma.quiz.create({
+      data,
+    });
   }
 
-  update(id: string, updateData) {
-    const quizIndex = this.quizzes.find((q) => q.id === id);
-    if (!quizIndex) return null;
-
-    this.quizzes[quizIndex] = { ...this.quizzes[quizIndex], updateData };
-    return this.quizzes[quizIndex];
+  async update(id: string, updateData: Partial<Quiz>): Promise<Quiz | null> {
+    return this.prisma.quiz.update({
+      where: { id },
+      data: updateData,
+    });
   }
 
-  delete(id: string) {
-    this.quizzes = this.quizzes.filter((q) => q.id === id);
+  async delete(id: string): Promise<{ message: string }> {
+    await this.prisma.quiz.delete({ where: { id } });
     return { message: 'Quiz deleted' };
   }
 }
