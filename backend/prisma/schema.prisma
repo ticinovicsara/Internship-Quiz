@@ -19,6 +19,7 @@ model Quiz {
   category Category @relation(fields: [categoryId], references: [id])
   categoryId String
   questions Question[]
+  scores Score[]
 }
 
 model Question {
@@ -53,11 +54,12 @@ model User {
   password String
   role Role
   scores Score[]
+  UserAnswer UserAnswer[]
 }
 
 enum Role {
-  ADMIN
-  PLAYER
+  Admin
+  Player
 }
 
 model Score {
