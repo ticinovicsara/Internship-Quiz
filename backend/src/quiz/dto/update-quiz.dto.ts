@@ -1,4 +1,6 @@
-import { IsAlpha, IsArray, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { CreateQuestionDto } from './create-question.dto';
 
 export class UpdateQuizDto {
   @IsString()

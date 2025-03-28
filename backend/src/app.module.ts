@@ -3,12 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { QuizController } from './quiz/quiz.controller';
 import { QuizModule } from './quiz/quiz.module';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { QuizService } from './quiz/quiz.service';
+import { PrismaModule } from './prisma.module';
 
 @Module({
-  imports: [QuizModule, AuthModule, UserModule],
+  imports: [QuizModule, PrismaModule],
   controllers: [AppController, QuizController],
-  providers: [AppService, QquizService],
+  providers: [AppService, QuizService],
 })
 export class AppModule {}

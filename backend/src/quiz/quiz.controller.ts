@@ -11,6 +11,8 @@ import {
 import { QuizService } from './quiz.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { AdminGuard } from 'src/auth/admin.guard';
+import { ApiBody } from '@nestjs/swagger';
+import { CreateQuizDto } from './dto/create-quiz.dto';
 
 @Controller('quiz')
 export class QuizController {
@@ -26,6 +28,7 @@ export class QuizController {
     return this.quizService.findQuiz(id);
   }
 
+  @ApiBody({ type: CreateQuizDto })
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
   create(@Body() quizData) {
