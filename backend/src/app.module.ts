@@ -5,9 +5,10 @@ import { QuizController } from './quiz/quiz.controller';
 import { QuizModule } from './quiz/quiz.module';
 import { QuizService } from './quiz/quiz.service';
 import { PrismaModule } from './prisma.module';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [QuizModule, PrismaModule],
+  imports: [QuizModule, UserModule, PrismaModule],
   controllers: [AppController, QuizController],
   providers: [AppService, QuizService],
 })

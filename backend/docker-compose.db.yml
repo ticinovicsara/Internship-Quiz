@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15
+    container_name: quiz_db
+    restart: always
+    environment:
+      POSTGRES_USER: quizuser
+      POSTGRES_PASSWORD: quizpassword
+      POSTGRES_DB: quizdb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'quizuser']
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    networks:
+      - app-network

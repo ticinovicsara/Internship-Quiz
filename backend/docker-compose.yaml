@@ -1,0 +1,16 @@
+version: '3.8'
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  database:
+    extends:
+      file: docker-compose.db.yml
+      service: database
+
+  backend:
+    extends:
+      file: docker-compose.backend.yml
+      service: backend
