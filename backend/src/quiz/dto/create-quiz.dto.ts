@@ -15,7 +15,7 @@ export class CreateQuizDto {
   categoryId: string;
 
   @ApiProperty({
-    type: [CreateQuestionDto], // Swagger sada zna da je niz pitanja
+    type: [CreateQuestionDto],
     description: 'Array of quiz questions',
   })
   @IsArray()

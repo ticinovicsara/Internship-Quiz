@@ -5,11 +5,11 @@ services:
     build: .
     container_name: quiz_backend
     restart: always
-    depends_on:
-      database:
-        condition: service_healthy
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
     environment:
-      DATABASE_URL: 'postgresql://quizuser:quizpassword@database:5432/quizdb'
+      DATABASE_URL: 'postgresql://quizuser:quizpassword@database:5433/quizdb'
     ports:
       - '3000:3000'
     volumes:

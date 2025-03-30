@@ -3,6 +3,8 @@ version: '3.8'
 networks:
   app-network:
     driver: bridge
+  default:
+    name: quiz_network
 
 services:
   database:

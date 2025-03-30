@@ -74,8 +74,6 @@ COPY --from=build /usr/src/app/. /usr/src/app/
 
 RUN mkdir -p /usr/src/app/dist && chmod -R 777 /usr/src/app/dist && chown -R node:node /usr/src/app/dist
 
-USER node
-
 # Expose the port that the application listens on.
 EXPOSE 3000
 
