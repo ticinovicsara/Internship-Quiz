@@ -14,65 +14,139 @@ async function main() {
 
   const user1 = await prisma.user.create({
     data: {
-      username: 'John_Ay',
+      username: 'JohnAy',
       email: 'john@gmail.com',
       password: 'john1234',
-      role: Role.Admin,
+      role: Role.Player,
     },
   });
 
-  const category1 = await prisma.category.create({
+  const user2 = await prisma.user.create({
     data: {
-      name: 'Math',
+      username: 'JaneDoe',
+      email: 'jane@gmail.com',
+      password: 'jane1234',
+      role: Role.Player,
     },
   });
 
-  const category2 = await prisma.category.create({
-    data: {
-      name: 'Science',
-    },
+  const categories = await prisma.category.createMany({
+    data: [
+      { name: 'Math' },
+      { name: 'Science' },
+      { name: 'History' },
+      { name: 'Geography' },
+      { name: 'Technology' },
+    ],
   });
 
-  const quiz1 = await prisma.quiz.create({
-    data: {
-      title: 'Basic Math Quiz',
-      categoryId: category1.id,
-    },
+  const categoriesData = await prisma.category.findMany();
+
+  const quizzes = await prisma.quiz.createMany({
+    data: [
+      { title: 'Basic Math Quiz', categoryId: categoriesData[0].id },
+      { title: 'Science Facts', categoryId: categoriesData[1].id },
+      { title: 'World History', categoryId: categoriesData[2].id },
+      { title: 'Geography Trivia', categoryId: categoriesData[3].id },
+      { title: 'Tech Innovations', categoryId: categoriesData[4].id },
+    ],
   });
 
-  const quiz2 = await prisma.quiz.create({
-    data: {
-      title: 'Science Quiz',
-      categoryId: category2.id,
-    },
-  });
+  const quizzesData = await prisma.quiz.findMany();
 
-  const question1 = await prisma.question.create({
-    data: {
-      text: 'What is 2 + 2?',
+  const questions = [
+    {
+      text: 'What is 5 + 3?',
       type: QuestionType.MULTIPLE,
-      quizId: quiz1.id,
-      options: JSON.stringify(['1', '2', '3', '4']),
-      corrAnswer: JSON.stringify(['4']),
+      quizId: quizzesData[0].id,
+      options: ['6', '7', '8', '9'],
+      corrAnswer: ['8'],
     },
-  });
-
-  const question2 = await prisma.question.create({
-    data: {
-      text: 'What is the boiling point of water?',
+    {
+      text: 'Solve for x: 2x = 10',
+      type: QuestionType.FILL_IN_THE_BLANK,
+      quizId: quizzesData[0].id,
+      options: [],
+      corrAnswer: ['5'],
+    },
+    {
+      text: 'Match the shapes to their names: Circle, Square',
+      type: QuestionType.MATCHING,
+      quizId: quizzesData[0].id,
+      options: ['Round Shape', 'Four-sided Shape'],
+      corrAnswer: ['Circle-Round Shape', 'Square-Four-sided Shape'],
+    },
+    {
+      text: 'Set the value of pi to the closest integer.',
+      type: QuestionType.SLIDER,
+      quizId: quizzesData[0].id,
+      options: [],
+      corrAnswer: ['3'],
+    },
+    {
+      text: 'Sort these numbers in ascending order: 3, 1, 4, 2',
+      type: QuestionType.SORT,
+      quizId: quizzesData[0].id,
+      options: ['3', '1', '4', '2'],
+      corrAnswer: ['1', '2', '3', '4'],
+    },
+    {
+      text: 'What is the chemical symbol for water?',
       type: QuestionType.MULTIPLE,
-      quizId: quiz2.id,
-      options: JSON.stringify(['90°C', '100°C', '110°C', '120°C']),
-      corrAnswer: JSON.stringify(['100°C']),
+      quizId: quizzesData[1].id,
+      options: ['H2O', 'O2', 'CO2', 'NaCl'],
+      corrAnswer: ['H2O'],
     },
-  });
+    {
+      text: 'Name the planet closest to the sun.',
+      type: QuestionType.FILL_IN_THE_BLANK,
+      quizId: quizzesData[1].id,
+      options: [],
+      corrAnswer: ['Mercury'],
+    },
+    {
+      text: 'Match the scientist to their discovery: Newton, Einstein',
+      type: QuestionType.MATCHING,
+      quizId: quizzesData[1].id,
+      options: ['Gravity', 'Relativity'],
+      corrAnswer: ['Newton-Gravity', 'Einstein-Relativity'],
+    },
+    {
+      text: 'What is the normal body temperature in Celsius?',
+      type: QuestionType.SLIDER,
+      quizId: quizzesData[1].id,
+      options: [],
+      corrAnswer: ['37'],
+    },
+    {
+      text: 'Sort these scientific fields by age: Physics, Biology, Chemistry',
+      type: QuestionType.SORT,
+      quizId: quizzesData[1].id,
+      options: ['Physics', 'Biology', 'Chemistry'],
+      corrAnswer: ['Physics', 'Biology', 'Chemistry'],
+    },
+  ];
 
-  const score1 = await prisma.score.create({
-    data: {
-      userId: admin.id,
-      quizId: quiz1.id,
-      points: 10,
-    },
+  for (const q of questions) {
+    await prisma.question.create({
+      data: {
+        text: q.text,
+        type: q.type,
+        quizId: q.quizId,
+        options: JSON.stringify(q.options),
+        corrAnswer: JSON.stringify(q.corrAnswer),
+      },
+    });
+  }
+
+  await prisma.score.createMany({
+    data: [
+      { userId: admin.id, quizId: quizzesData[0].id, points: 10 },
+      { userId: user1.id, quizId: quizzesData[1].id, points: 8 },
+      { userId: user2.id, quizId: quizzesData[2].id, points: 7 },
+      { userId: admin.id, quizId: quizzesData[3].id, points: 9 },
+      { userId: user1.id, quizId: quizzesData[4].id, points: 6 },
+    ],
   });
 
   console.log('Seed data created successfully!');

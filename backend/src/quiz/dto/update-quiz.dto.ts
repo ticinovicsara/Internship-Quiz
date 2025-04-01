@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreateQuestionDto } from './create-question.dto';
+import { UpdateQuestionDto } from './update-question.dto';
 
 export class UpdateQuizDto {
   @IsString()
@@ -9,11 +10,11 @@ export class UpdateQuizDto {
 
   @IsString()
   @IsOptional()
-  categoryId?: string;
+  categoryName?: string;
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateQuestionDto)
   @IsOptional()
-  questions?: CreateQuestionDto[];
+  questions?: UpdateQuestionDto[];
 }

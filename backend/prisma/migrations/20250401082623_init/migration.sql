@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "QuestionType" AS ENUM ('ABC', 'FILL_IN_THE_BLANK', 'MATCHING', 'SLIDER', 'SORT');
+CREATE TYPE "QuestionType" AS ENUM ('MULTIPLE', 'FILL_IN_THE_BLANK', 'MATCHING', 'SLIDER', 'SORT');
 
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('Admin', 'Player');

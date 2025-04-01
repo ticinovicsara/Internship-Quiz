@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { AdminGuard } from 'src/auth/admin.guard';
 import { ApiBody } from '@nestjs/swagger';
 import { CreateQuizDto } from './dto/create-quiz.dto';
+import { UpdateQuizDto } from './dto/update-quiz.dto';
 
 @Controller('quiz')
 export class QuizController {
@@ -23,26 +24,27 @@ export class QuizController {
     return this.quizService.findAll();
   }
 
-  @Get(':id')
-  findQuiz(@Param('id') id: string) {
-    return this.quizService.findQuiz(id);
+  @Get(':title')
+  findQuiz(@Param('title') title: string) {
+    return this.quizService.findQuiz(title);
   }
 
   @ApiBody({ type: CreateQuizDto })
   @Post()
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  create(@Body() quizData) {
+  //@UseGuards(JwtAuthGuard, AdminGuard)
+  create(@Body() quizData: CreateQuizDto) {
     return this.quizService.create(quizData);
   }
 
-  @Put()
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  update(@Param('id') id: string, @Body() updateData) {
+  @ApiBody({ type: UpdateQuizDto })
+  @Put(':id')
+  //@UseGuards(JwtAuthGuard, AdminGuard)
+  update(@Param('id') id: string, @Body() updateData: UpdateQuizDto) {
     return this.quizService.update(id, updateData);
   }
 
-  @Delete()
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete(':id')
+  //@UseGuards(JwtAuthGuard, AdminGuard)
   delete(@Param('id') id: string) {
     return this.quizService.delete(id);
   }

@@ -4,15 +4,18 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateQuizDto {
-  @ApiProperty({ example: 'Math Quiz', description: 'Title of the quiz' })
+  @ApiProperty({ example: 'Geography Quiz', description: 'Title of the quiz' })
   @IsString()
   @IsNotEmpty()
   title: string;
 
-  @ApiProperty({ example: '123', description: 'Category ID of the quiz' })
+  @ApiProperty({
+    example: 'Geography',
+    description: 'Category name of the quiz',
+  })
   @IsString()
   @IsNotEmpty()
-  categoryId: string;
+  categoryName: string;
 
   @ApiProperty({
     type: [CreateQuestionDto],
