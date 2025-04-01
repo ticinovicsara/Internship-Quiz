@@ -1,17 +1,55 @@
 import { useState } from "react";
 import { useRegister } from "../hooks/useRegister";
 import { TextField, Button, Typography, Container } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { validateEmail } from "../utils/validateEmail";
 
 export function RegisterPage() {
+  const navigate = useNavigate();
   const { registerUser, loading, error } = useRegister();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    await registerUser(email, password, name);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const handleRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setEmailError("");
+    setPasswordError("");
+
+    let valid = true;
+
+    if (!validateEmail(email)) {
+      setEmailError("Invalid email format.");
+      valid = false;
+    }
+
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters long.");
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    try {
+      const data = await registerUser(username, email, password);
+
+      if (data && data.id) {
+        localStorage.setItem("token", data.access_token);
+        navigate("/quizzes");
+        toast.success("Registration successful!");
+      } else {
+        console.error("Invalid response format:", data);
+        toast.error("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Registration failed", error);
+      toast.error("Registration failed. Please try again.");
+    }
   };
 
   return (
@@ -19,11 +57,11 @@ export function RegisterPage() {
       <Typography variant="h4" gutterBottom align="center">
         Register
       </Typography>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleRegistration}>
         <TextField
           label="Username"
           fullWidth
-          value={name}
+          value={username}
           onChange={(e) => setName(e.target.value)}
           required
           margin="normal"
@@ -36,6 +74,8 @@ export function RegisterPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
           margin="normal"
+          error={!!emailError}
+          helperText={emailError}
         />
         <TextField
           label="Password"
@@ -45,6 +85,8 @@ export function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
           margin="normal"
+          error={!!passwordError}
+          helperText={passwordError}
         />
         {error && (
           <Typography color="error" align="center" margin="normal">

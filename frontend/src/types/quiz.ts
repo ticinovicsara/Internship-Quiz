@@ -1,6 +1,10 @@
 export interface Quiz {
-  id: number;
+  id: string;
   title: string;
+  categoryId: string;
+  category: {
+    id: string;
+    name: string;
+  };
   imageURL: string;
-  category: string;
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { AppBar, Toolbar } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { isAuthenticated, logout } from "../utils/auth";
 
 export function Navigation() {
@@ -14,13 +14,21 @@ export function Navigation() {
   };
 
   return (
-    <AppBar position="static" style={{ padding: "10px" }}>
-      <Toolbar style={{ justifyContent: "space-between", gap: "10px" }}>
-        <div
-          style={{
+    <AppBar
+      position="static"
+      style={{
+        padding: "10px",
+      }}
+    >
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h6">QuizTrivia</Typography>
+
+        <Box
+          sx={{
             display: "flex",
             alignItems: "center",
-            gap: "10px",
+            flexGrow: 1,
+            justifyContent: "center",
           }}
         >
           <TextField
@@ -29,17 +37,21 @@ export function Navigation() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             sx={{
-              minWidth: 150,
+              minWidth: 200,
               border: "1px solid #ccc",
               backgroundColor: "whitesmoke",
               borderRadius: "4px",
             }}
             size="small"
           />
-          <Button variant="contained" onClick={handleSearch}>
+          <Button
+            variant="contained"
+            onClick={handleSearch}
+            sx={{ marginLeft: "10px" }}
+          >
             Search
           </Button>
-        </div>
+        </Box>
 
         {isAuthenticated() ? (
           <Button variant="outlined" color="error" onClick={logout}>

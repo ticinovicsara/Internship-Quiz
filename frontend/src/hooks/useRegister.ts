@@ -12,8 +12,9 @@ export function useRegister() {
   ) => {
     setLoading(true);
     setError(null);
+
     try {
-      const data = await register(email, password, username);
+      const data = await register(username, email, password);
       setLoading(false);
       return data;
     } catch (err: any) {
@@ -32,6 +33,8 @@ export function useRegister() {
       } else {
         setError("Network error. Check your connection.");
       }
+
+      throw err;
     }
   };
 

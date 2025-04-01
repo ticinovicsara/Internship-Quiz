@@ -11,6 +11,7 @@ export async function register(
       email,
       password,
     });
+
     return response.data;
   } catch (error) {
     console.error("Registration failed:", error);

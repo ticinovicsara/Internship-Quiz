@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchQuizzes } from "../services/fetchQuizzes";
+import { Quiz } from "../types/quiz";
 
 export function useQuizzes(searchQuery: string) {
   const [quizzes, setQuizzes] = useState([]);
@@ -14,8 +15,8 @@ export function useQuizzes(searchQuery: string) {
         const data = await fetchQuizzes();
         if (searchQuery) {
           setQuizzes(
-            data.filter((q: any) =>
-              q.name.toLowerCase().includes(searchQuery.toLowerCase())
+            data.filter((q: Quiz) =>
+              q.title.toLowerCase().includes(searchQuery.toLowerCase())
             )
           );
         } else {

@@ -3,6 +3,7 @@ import { useLogin } from "../hooks/useLogin";
 import { TextField, Button, Typography, Container } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../utils/auth";
+import { toast } from "react-toastify";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -19,8 +20,11 @@ export function LoginPage() {
         localStorage.setItem("token", data.access_token);
         navigate("/quizzes");
       }
+
+      toast.success("Successfully logged in!");
     } catch (error) {
       console.error("Login failed", error);
+      toast.error("Login failed. Please try again.");
     }
   };
 

@@ -12,6 +12,7 @@ import {
   RegisterPage,
 } from "./pages";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ToastNotification } from "./components/ToastNotification";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/404" element={<NotFoundPage />} />
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
+      <ToastNotification />
     </Router>
   );
 }

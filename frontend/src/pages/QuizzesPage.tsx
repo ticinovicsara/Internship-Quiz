@@ -4,9 +4,10 @@ import { Navigation } from "../components/Navigation";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { CircularProgress, Grid } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
 import { useQuizzes } from "../hooks/useQuizzes";
+import { Quiz } from "../types/quiz";
 
 export function QuizzesPage() {
   const navigate = useNavigate();
@@ -26,17 +27,29 @@ export function QuizzesPage() {
     return <Typography color="error">Error: {error}</Typography>;
   }
 
-  const filteredQuizzes = quizzes.filter((q) =>
+  const filteredQuizzes = quizzes.filter((q: Quiz) =>
     q.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div>
       <Navigation />
-      <Grid container spacing={3} padding={3}>
-        {filteredQuizzes.map((quiz) => (
-          <Grid key={quiz.id}>
-            <Card onClick={() => navigate(`/quiz/${quiz.id}`)}>
+      <div
+        style={{
+          padding: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "15px",
+          marginTop: "30px",
+          justifyContent: "center",
+        }}
+      >
+        {filteredQuizzes.map((quiz: Quiz) => (
+          <div key={quiz.id} style={{ width: "250px" }}>
+            <Card
+              onClick={() => navigate(`/quiz/${quiz.id}`)}
+              style={{ cursor: "pointer" }}
+            >
               <CardMedia
                 component="img"
                 height="140"
@@ -45,11 +58,16 @@ export function QuizzesPage() {
               />
               <CardContent>
                 <Typography variant="h6">{quiz.title}</Typography>
+                {quiz.category && (
+                  <Typography variant="body2" color="textSecondary">
+                    {quiz.category.name}
+                  </Typography>
+                )}
               </CardContent>
             </Card>
-          </Grid>
+          </div>
         ))}
-      </Grid>
+      </div>
     </div>
   );
 }

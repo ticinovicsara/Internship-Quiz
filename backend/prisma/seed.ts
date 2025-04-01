@@ -54,7 +54,7 @@ async function main() {
         title: 'Basic Math Quiz',
         categoryId: categoriesData[0].id,
         imageURL:
-          'https://resilienteducator.com/wp-a/uploads/2012/11/AdobeStock_60467600_cup.jpg',
+          'https://th-thumbnailer.cdn-si-edu.com/66qS_BBksmwgPdB2BsZv6TnRjK0=/1000x750/filters:no_upscale():focal(1295x777:1296x778)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/87/ee/87ee6918-7808-4e18-b3f9-d3c3db54e873/gettyimages-157686793_web.jpg',
       },
       {
         title: 'Science Facts',
