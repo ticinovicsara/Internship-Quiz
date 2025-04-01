@@ -31,20 +31,20 @@ export class QuizController {
 
   @ApiBody({ type: CreateQuizDto })
   @Post()
-  //@UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   create(@Body() quizData: CreateQuizDto) {
     return this.quizService.create(quizData);
   }
 
   @ApiBody({ type: UpdateQuizDto })
   @Put(':id')
-  //@UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   update(@Param('id') id: string, @Body() updateData: UpdateQuizDto) {
     return this.quizService.update(id, updateData);
   }
 
   @Delete(':id')
-  //@UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   delete(@Param('id') id: string) {
     return this.quizService.delete(id);
   }

@@ -65,16 +65,20 @@ export class QuizService {
 
   async update(id: string, updateData: UpdateQuizDto): Promise<Quiz | null> {
     let categoryId: string | null = null;
+
     if (updateData.categoryName) {
-      const category = await this.prisma.category.findFirst({
+      const existingCategory = await this.prisma.category.findFirst({
         where: { name: updateData.categoryName },
       });
 
-      if (!category) {
-        throw new Error('Category not found');
+      if (existingCategory) {
+        categoryId = existingCategory.id;
+      } else {
+        const newCategory = await this.prisma.category.create({
+          data: { name: updateData.categoryName },
+        });
+        categoryId = newCategory.id;
       }
-
-      categoryId = category.id;
     }
 
     return this.prisma.quiz.update({
@@ -82,19 +86,46 @@ export class QuizService {
       data: {
         title: updateData.title,
         ...(categoryId ? { categoryId } : {}),
-        questions: updateData.questions
-          ? {
-              update: updateData.questions.map((question) => ({
-                where: { id: question.id },
-                data: question,
-              })),
-            }
-          : undefined,
+        questions: {
+          upsert:
+            updateData.questions?.map((question) => {
+              if (
+                !question.text ||
+                !question.type ||
+                !question.options ||
+                !question.corrAnswer
+              ) {
+                throw new Error('All fields for a question must be provided.');
+              }
+
+              return {
+                where: { id: question.id || '' },
+                create: {
+                  text: question.text,
+                  type: question.type,
+                  options: JSON.stringify(question.options),
+                  corrAnswer: JSON.stringify(question.corrAnswer),
+                },
+                update: {
+                  text: question.text,
+                  type: question.type,
+                  options: JSON.stringify(question.options),
+                  corrAnswer: JSON.stringify(question.corrAnswer),
+                },
+              };
+            }) || [],
+        },
       },
     });
   }
 
   async delete(id: string): Promise<{ message: string }> {
+    await this.prisma.question.deleteMany({
+      where: {
+        quizId: id, // Povezivanje sa quizom
+      },
+    });
+
     await this.prisma.score.deleteMany({
       where: {
         quizId: id,

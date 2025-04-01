@@ -14,7 +14,7 @@ export class UpdateQuizDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateQuestionDto)
+  @Type(() => UpdateQuestionDto)
   @IsOptional()
   questions?: UpdateQuestionDto[];
 }

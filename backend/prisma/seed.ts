@@ -1,13 +1,19 @@
 import { PrismaClient, QuestionType, Role } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
+
+async function hashPassword(password: string) {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+}
 
 async function main() {
   const admin = await prisma.user.create({
     data: {
       username: 'admin',
       email: 'admin@example.com',
-      password: 'admin1234',
+      password: await hashPassword('admin1234'),
       role: Role.Admin,
     },
   });
@@ -16,7 +22,7 @@ async function main() {
     data: {
       username: 'JohnAy',
       email: 'john@gmail.com',
-      password: 'john1234',
+      password: await hashPassword('john1234'),
       role: Role.Player,
     },
   });
@@ -25,7 +31,7 @@ async function main() {
     data: {
       username: 'JaneDoe',
       email: 'jane@gmail.com',
-      password: 'jane1234',
+      password: await hashPassword('jane1234'),
       role: Role.Player,
     },
   });
