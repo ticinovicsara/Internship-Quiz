@@ -18,9 +18,9 @@ export class QuizService {
     });
   }
 
-  async findQuiz(title: string): Promise<Quiz | null> {
-    return this.prisma.quiz.findFirst({
-      where: { title },
+  async findQuiz(id: string): Promise<Quiz | null> {
+    return this.prisma.quiz.findUnique({
+      where: { id },
       include: {
         category: true,
         questions: true,

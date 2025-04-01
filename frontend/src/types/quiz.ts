@@ -1,3 +1,6 @@
+import { Question } from "./question";
+import { Score } from "./score";
+
 export interface Quiz {
   id: string;
   title: string;
@@ -7,4 +10,6 @@ export interface Quiz {
     name: string;
   };
   imageURL: string;
+  questions: Question[];
+  scores: Score[];
 }
