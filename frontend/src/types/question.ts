@@ -1,7 +1,7 @@
 export type Question = {
   id: number;
   type: string;
-  questionText: string;
+  text: string;
   options?: string[];
   answer: string;
 };

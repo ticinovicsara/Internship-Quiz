@@ -1,21 +1,12 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Navigation } from "../components/Navigation";
-import {
-  Typography,
-  Container,
-  Button,
-  TextField,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormControl,
-  Box,
-  CardContent,
-  Card,
-} from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { useQuiz } from "../hooks/useQuiz";
 import { Question } from "../types/question";
+import { QuestionComponent } from "../components/QuestionComponent";
+import { ScoreSection } from "../components/ScoreSection";
+import { Navigation } from "../components/Navigation";
+import { QuestionHeader } from "../components/QuestionHeader";
 
 export function QuizPage() {
   const { quizId } = useParams<{ quizId?: string }>();
@@ -26,12 +17,14 @@ export function QuizPage() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [score, setScore] = useState(0);
   const [users, setUsers] = useState<{ username: string; score: number }[]>([]);
+  const [showImage, setShowImage] = useState(true);
 
   const startQuiz = () => {
     setQuizStarted(true);
     setScore(0);
     setUserAnswers({});
     setCurrentQuestionIndex(0);
+    setShowImage(false);
   };
 
   const handleAnswerChange = (questionId: number, answer: string) => {
@@ -43,7 +36,13 @@ export function QuizPage() {
 
     let totalScore = 0;
     quiz.questions.forEach((question: Question) => {
-      if (userAnswers[question.id] === question.answer) {
+      const correctAnswers: string[] =
+        typeof question.answer === "string" ? JSON.parse(question.answer) : [];
+
+      if (
+        userAnswers[question.id] &&
+        correctAnswers.includes(userAnswers[question.id])
+      ) {
         totalScore++;
       }
     });
@@ -75,117 +74,71 @@ export function QuizPage() {
   }
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
+  const options = currentQuestion.options || [];
+  const correctAnswers = currentQuestion.answer
+    ? JSON.parse(currentQuestion.answer)
+    : [];
 
   return (
-    <Container>
+    <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       <Navigation />
-      <Typography variant="h4" gutterBottom>
-        Quiz: {quiz.title}
-      </Typography>
-
-      {!quizStarted ? (
+      <QuestionHeader
+        title={quiz.title}
+        imageURL={showImage ? quiz.imageURL : ""}
+      />
+      {quizStarted && currentQuestion ? (
         <Button variant="contained" color="primary" onClick={startQuiz}>
           Start Quiz
         </Button>
       ) : (
-        <Box style={{ justifyContent: "center" }}>
-          <Card style={{ marginBottom: "20px" }}>
-            <CardContent>
-              <Typography variant="h6">
-                {currentQuestion.questionText}
-              </Typography>
+        <QuestionComponent
+          question={{
+            ...currentQuestion,
+            options: options,
+            answer: correctAnswers,
+          }}
+          userAnswer={userAnswers[currentQuestion.id] || ""}
+          onAnswerChange={handleAnswerChange}
+        />
+      )}
 
-              {currentQuestion.type === "multiple_choice" && (
-                <FormControl component="fieldset">
-                  <RadioGroup
-                    value={userAnswers[currentQuestion.id] || ""}
-                    onChange={(e) =>
-                      handleAnswerChange(currentQuestion.id, e.target.value)
-                    }
-                  >
-                    {currentQuestion.options?.map(
-                      (option: any, index: number) => (
-                        <FormControlLabel
-                          key={index}
-                          value={option}
-                          control={<Radio />}
-                          label={option}
-                        />
-                      )
-                    )}
-                  </RadioGroup>
-                </FormControl>
-              )}
-
-              {currentQuestion.type === "fill_in_the_blank" && (
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Your answer"
-                  value={userAnswers[currentQuestion.id] || ""}
-                  onChange={(e) =>
-                    handleAnswerChange(currentQuestion.id, e.target.value)
-                  }
-                />
-              )}
-
-              {currentQuestion.type === "matching" && (
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Your answer"
-                  value={userAnswers[currentQuestion.id] || ""}
-                  onChange={(e) =>
-                    handleAnswerChange(currentQuestion.id, e.target.value)
-                  }
-                />
-              )}
-
-              {currentQuestion.type === "ordering" && (
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Order your answers"
-                  value={userAnswers[currentQuestion.id] || ""}
-                  onChange={(e) =>
-                    handleAnswerChange(currentQuestion.id, e.target.value)
-                  }
-                />
-              )}
-
-              {currentQuestion.type === "slider" && (
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={userAnswers[currentQuestion.id] || ""}
-                  onChange={(e) =>
-                    handleAnswerChange(currentQuestion.id, e.target.value)
-                  }
-                  placeholder="Your answer"
-                />
-              )}
-            </CardContent>
-          </Card>
-
+      {quizStarted && (
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginTop: "20px",
+          }}
+        >
           {currentQuestionIndex < quiz.questions.length - 1 ? (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={goToNextQuestion}
-            >
-              Next Question
-            </Button>
+            <>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={goToNextQuestion}
+              >
+                Next Question
+              </Button>
+              <Typography variant="h6" style={{ marginTop: "20px" }}>
+                Current question: {currentQuestionIndex + 1} /{" "}
+                {quiz.questions.length}
+              </Typography>
+            </>
           ) : (
             <Button variant="contained" color="secondary" onClick={finishQuiz}>
               Finish Quiz
             </Button>
           )}
-
-          <Typography variant="h6" style={{ marginTop: "20px" }}>
-            Your score: {score}/{quiz.questions.length}
-          </Typography>
+          <ScoreSection score={score} totalQuestions={quiz.questions.length} />
         </Box>
       )}
-    </Container>
+    </Box>
   );
 }
