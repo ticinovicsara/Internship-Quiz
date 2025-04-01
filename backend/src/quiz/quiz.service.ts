@@ -122,7 +122,7 @@ export class QuizService {
   async delete(id: string): Promise<{ message: string }> {
     await this.prisma.question.deleteMany({
       where: {
-        quizId: id, // Povezivanje sa quizom
+        quizId: id,
       },
     });
 

@@ -50,11 +50,36 @@ async function main() {
 
   const quizzes = await prisma.quiz.createMany({
     data: [
-      { title: 'Basic Math Quiz', categoryId: categoriesData[0].id },
-      { title: 'Science Facts', categoryId: categoriesData[1].id },
-      { title: 'World History', categoryId: categoriesData[2].id },
-      { title: 'Geography Trivia', categoryId: categoriesData[3].id },
-      { title: 'Tech Innovations', categoryId: categoriesData[4].id },
+      {
+        title: 'Basic Math Quiz',
+        categoryId: categoriesData[0].id,
+        imageURL:
+          'https://resilienteducator.com/wp-a/uploads/2012/11/AdobeStock_60467600_cup.jpg',
+      },
+      {
+        title: 'Science Facts',
+        categoryId: categoriesData[1].id,
+        imageURL:
+          'https://static.scientificamerican.com/sciam/cache/file/D348D0D8-0122-4722-A19EFF9FC4DA4ED4_source.jpg?w=1000',
+      },
+      {
+        title: 'World History',
+        categoryId: categoriesData[2].id,
+        imageURL:
+          'https://edrawmax.wondershare.com/article2023/world-history-timeline/world-history.jpg',
+      },
+      {
+        title: 'Geography Trivia',
+        categoryId: categoriesData[3].id,
+        imageURL:
+          'https://tpdedu.s3.ap-southeast-2.amazonaws.com/uploads/2024/05/01211747/geography-1080x673.jpg',
+      },
+      {
+        title: 'Tech Innovations',
+        categoryId: categoriesData[4].id,
+        imageURL:
+          'https://www.brookings.edu/wp-content/uploads/2017/11/metro_20171121_tech-empowers-tech-polarizes-mark-muro.jpg?resize=2000,1334',
+      },
     ],
   });
 

@@ -24,11 +24,6 @@ export class UserController {
     return this.userService.getAll();
   }
 
-  @Post('register')
-  register(@Body() body: RegisterUserDto) {
-    return this.userService.create(body);
-  }
-
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<UserResponseDto> {
     const user = await this.userService.findById(id);
@@ -36,6 +31,11 @@ export class UserController {
       throw new BadRequestException(`User with ID ${id} not found`);
     }
     return user;
+  }
+
+  @Post('register')
+  register(@Body() body: RegisterUserDto) {
+    return this.userService.create(body);
   }
 
   @Put(':id')

@@ -20,6 +20,7 @@ model Quiz {
   categoryId String
   questions Question[]
   scores Score[]
+  imageURL String  @default("")
 }
 
 model Question {
