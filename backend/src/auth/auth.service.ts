@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -13,18 +18,23 @@ export class AuthService {
 
   async register(username: string, email: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.userService.create({
+    return this.userService.register({
       username,
       email,
       password: hashedPassword,
     });
   }
 
-  async login(username: string, password: string) {
-    const user = await this.userService.findByEmail(username);
+  async login(email: string, password: string) {
+    const user = await this.userService.findByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new BadRequestException('Invalid credentials');
+    if (!user) {
+      throw new NotFoundException('Email not found. Please register.');
+    }
+
+    const passwordMatches = await bcrypt.compare(password, user.password);
+    if (!passwordMatches) {
+      throw new UnauthorizedException('Incorrect password. Please try again.');
     }
 
     return {

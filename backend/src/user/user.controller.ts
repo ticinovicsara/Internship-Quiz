@@ -35,7 +35,7 @@ export class UserController {
 
   @Post('register')
   register(@Body() body: RegisterUserDto) {
-    return this.userService.create(body);
+    return this.userService.register(body);
   }
 
   @Put(':id')

@@ -21,7 +21,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<QuizzesPage />} />
+          <Route path="/quizzes" element={<QuizzesPage />} />
           <Route path="/quiz/:quizId" element={<QuizPage />} />
         </Route>
 

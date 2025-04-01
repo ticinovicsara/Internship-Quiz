@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLogin } from "../hooks/useLogin";
 import { TextField, Button, Typography, Container } from "@mui/material";
-import { data, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../utils/auth";
 
 export function LoginPage() {
@@ -13,10 +13,14 @@ export function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const data = await loginUser(email, password);
-    if (data?.token) {
-      localStorage.setItem("token", data.token);
-      navigate("/quizzes");
+    try {
+      const data = await loginUser(email, password);
+      if (data && data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        navigate("/quizzes");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
     }
   };
 

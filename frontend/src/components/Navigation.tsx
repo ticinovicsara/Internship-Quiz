@@ -14,24 +14,39 @@ export function Navigation() {
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <TextField
-          label="Search for quizzes"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button variant="contained" onClick={handleSearch}>
-          Search
-        </Button>
+    <AppBar position="static" style={{ padding: "10px" }}>
+      <Toolbar style={{ justifyContent: "space-between", gap: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <TextField
+            label="Search for quizzes"
+            variant="outlined"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              minWidth: 150,
+              border: "1px solid #ccc",
+              backgroundColor: "whitesmoke",
+              borderRadius: "4px",
+            }}
+            size="small"
+          />
+          <Button variant="contained" onClick={handleSearch}>
+            Search
+          </Button>
+        </div>
 
         {isAuthenticated() ? (
-          <Button color="inherit" onClick={logout}>
+          <Button variant="outlined" color="error" onClick={logout}>
             Logout
           </Button>
         ) : (
-          <Button color="inherit" onClick={() => navigate("/login")}>
+          <Button color="primary" onClick={() => navigate("/")}>
             Login
           </Button>
         )}

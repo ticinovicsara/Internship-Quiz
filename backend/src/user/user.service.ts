@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -12,10 +13,26 @@ export class UserService {
     return this.prisma.user.findMany({});
   }
 
-  async create(data: RegisterUserDto) {
-    const hashedPass = await bcrypt.hash(data.password, 10);
+  async register(data: RegisterUserDto) {
+    const existingUser = await this.findByEmail(data.email);
+    if (existingUser) {
+      throw new BadRequestException('Email already exists.');
+    }
+
+    const existingUsername = await this.findByUsername(data.username);
+    if (existingUsername) {
+      throw new BadRequestException('Username already taken.');
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     return this.prisma.user.create({
-      data: { ...data, password: hashedPass, role: 'Player' },
+      data: {
+        username: data.username,
+        email: data.email.toLowerCase(),
+        password: hashedPassword,
+        role: Role.Player,
+      },
     });
   }
 
@@ -24,7 +41,9 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    return this.prisma.user.findFirst({ where: { email } });
+    return this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
   }
 
   async findById(id: string) {

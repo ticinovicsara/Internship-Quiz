@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-export async function getQuizzes() {
+export async function fetchQuizzes() {
   try {
     const response = await apiClient.get("/quiz");
     return response.data;

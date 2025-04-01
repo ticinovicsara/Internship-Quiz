@@ -51,7 +51,7 @@ model Category {
 model User {
   id String @id @default(uuid())
   username String @unique
-  email String
+  email String @unique
   password String
   role Role
   scores Score[]

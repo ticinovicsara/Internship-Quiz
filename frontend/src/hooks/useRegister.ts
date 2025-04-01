@@ -8,17 +8,30 @@ export function useRegister() {
   const registerUser = async (
     email: string,
     password: string,
-    name: string
+    username: string
   ) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await register(email, password, name);
+      const data = await register(email, password, username);
       setLoading(false);
       return data;
-    } catch (err) {
-      setError("Registration failed. Please try again.");
+    } catch (err: any) {
       setLoading(false);
+
+      if (err.response) {
+        const { status, data } = err.response;
+
+        if (status === 400 && data?.message?.includes("email")) {
+          setError("Email already exists. Please use a different one.");
+        } else if (status === 400 && data?.message?.includes("username")) {
+          setError("Username already taken. Try another one.");
+        } else {
+          setError(data?.message || "Registration failed. Try again.");
+        }
+      } else {
+        setError("Network error. Check your connection.");
+      }
     }
   };
 
