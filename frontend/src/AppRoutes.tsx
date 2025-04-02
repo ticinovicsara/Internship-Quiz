@@ -21,7 +21,7 @@ const AppRoutes = () => {
       </Route>
 
       <Route path={paths.NOTFOUND} element={<NotFoundPage />} />
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path={paths.OTHER} element={<NotFoundPage />} />
     </Routes>
   );
 };

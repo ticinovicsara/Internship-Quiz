@@ -16,12 +16,15 @@ export function LoginPage() {
 
     try {
       const data = await loginUser(email, password);
-      if (data && data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        navigate("/quizzes");
-      }
 
-      toast.success("Successfully logged in!");
+      if (data && data.access_token) {
+        await localStorage.setItem("token", data.access_token);
+
+        navigate("/quizzes");
+        toast.success("Successfully logged in!");
+      } else {
+        console.error("Access token is missing from response.");
+      }
     } catch (error) {
       console.error("Login failed", error);
       toast.error("Login failed. Please try again.");

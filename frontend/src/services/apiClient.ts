@@ -13,7 +13,7 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`; // Dodaj token u svaki zahtjev
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },

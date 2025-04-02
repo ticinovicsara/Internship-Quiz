@@ -4,10 +4,12 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { isAuthenticated, logout } from "../utils/auth";
+import { getUsernameFromToken } from "../utils/getUsername";
 
 export function Navigation() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const username = getUsernameFromToken();
 
   const handleSearch = () => {
     navigate(`/quizzes?search=${search}`);
@@ -63,9 +65,14 @@ export function Navigation() {
         </Box>
 
         {isAuthenticated() ? (
-          <Button variant="outlined" color="error" onClick={logout}>
-            Logout
-          </Button>
+          <>
+            <Typography sx={{ color: "white", marginRight: "10px" }}>
+              <b>{username}</b>
+            </Typography>
+            <Button variant="outlined" color="error" onClick={logout}>
+              Logout
+            </Button>
+          </>
         ) : (
           <Button color="primary" onClick={() => navigate("/")}>
             Login

@@ -37,8 +37,10 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect password. Please try again.');
     }
 
-    return {
-      access_token: this.jwtService.sign({ userId: user.id, role: user.role }),
-    };
+    return this.jwtService.sign({
+      userId: user.id,
+      role: user.role,
+      username: user.username,
+    });
   }
 }
