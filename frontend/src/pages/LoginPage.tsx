@@ -4,6 +4,7 @@ import { TextField, Button, Typography, Container } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../utils/auth";
 import { toast } from "react-toastify";
+import paths from "../utils/paths";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export function LoginPage() {
       if (data && data.access_token) {
         await localStorage.setItem("token", data.access_token);
 
-        navigate("/quizzes");
+        navigate(paths.QUIZZES);
         toast.success("Successfully logged in!");
       } else {
         console.error("Access token is missing from response.");
@@ -33,7 +34,7 @@ export function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate("/quizzes");
+      navigate(paths.QUIZZES);
     }
   }, []);
 

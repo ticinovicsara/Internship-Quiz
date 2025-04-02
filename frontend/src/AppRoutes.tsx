@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import {
   QuizzesPage,
   QuizPage,
@@ -7,9 +7,19 @@ import {
   RegisterPage,
 } from "./pages";
 import ProtectedRoute from "./components/ProtectedRoute";
-import paths from "./paths";
+import paths from "./utils/paths";
+import { useEffect } from "react";
+import { isAuthenticated } from "./utils/auth";
 
 const AppRoutes = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === "/" && !isAuthenticated()) {
+      navigate(paths.LOGIN, { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
   return (
     <Routes>
       <Route path={paths.LOGIN} element={<LoginPage />} />

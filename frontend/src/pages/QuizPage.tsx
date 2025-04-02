@@ -7,12 +7,15 @@ import { QuestionComponent } from "../components/QuestionComponent";
 import { ScoreSection } from "../components/ScoreSection";
 import { Navigation } from "../components/Navigation";
 import { QuestionHeader } from "../components/QuestionHeader";
+import { QuestionType } from "../types/questionType";
 export function QuizPage() {
   const { quizId } = useParams<{ quizId?: string }>();
   const { quiz, loading, error } = useQuiz(quizId ?? "");
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<{ [key: number]: string }>({});
+  const [userAnswers, setUserAnswers] = useState<{
+    [key: number]: { [key: string]: string };
+  }>({});
   const [quizStarted, setQuizStarted] = useState(false);
   const [score, setScore] = useState(0);
   const [users, setUsers] = useState<{ username: string; score: number }[]>([]);
@@ -28,12 +31,21 @@ export function QuizPage() {
 
   const handleAnswerChange = (
     questionId: number,
-    answer: { [key: string]: string }
+    answer: { [key: string]: any }
   ) => {
     setUserAnswers((prevState) => ({
       ...prevState,
-      [questionId]: answer.answer,
+      [questionId]: answer,
     }));
+  };
+
+  const handleAnswerSelection = (questionId: number, selectedValue: string) => {
+    const updatedAnswer = {
+      ...userAnswers[questionId],
+      answer: selectedValue,
+    };
+
+    handleAnswerChange(questionId, updatedAnswer);
   };
 
   const calculateScore = () => {
@@ -44,11 +56,23 @@ export function QuizPage() {
       const correctAnswers: string[] =
         typeof question.corrAnswer === "string"
           ? JSON.parse(question.corrAnswer)
-          : [];
+          : question.corrAnswer;
 
-      if (
+      if (question.type === QuestionType.MATCHING) {
+        const userAnswer: { [key: string]: string } = userAnswers[question.id];
+        let correct = true;
+        correctAnswers.forEach((correctPair) => {
+          const [item, correctOption] = correctPair.split("-");
+          if (userAnswer[item] !== correctOption) {
+            correct = false;
+          }
+        });
+        if (correct) {
+          totalScore++;
+        }
+      } else if (
         userAnswers[question.id] &&
-        correctAnswers.includes(userAnswers[question.id])
+        correctAnswers.includes(Object.values(userAnswers[question.id])[0])
       ) {
         totalScore++;
       }
@@ -105,8 +129,9 @@ export function QuizPage() {
       {quizStarted && currentQuestion && (
         <QuestionComponent
           question={currentQuestion}
-          userAnswer={{ answer: userAnswers[currentQuestion.id] || "" }}
+          userAnswer={userAnswers[currentQuestion.id] || {}}
           onAnswerChange={handleAnswerChange}
+          onAnswerSelection={handleAnswerSelection}
         />
       )}
 

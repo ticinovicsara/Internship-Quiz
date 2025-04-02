@@ -23,6 +23,7 @@ export function QuestionComponent({
   question,
   userAnswer,
   onAnswerChange,
+  onAnswerSelection,
 }: QuestionComponentProps) {
   console.log("Question:", question);
   console.log("options:", question.options);
@@ -47,21 +48,25 @@ export function QuestionComponent({
   };
 
   const handleSliderChange = (_event: Event, newValue: number | number[]) => {
-    onAnswerChange(question.id, {
-      correctAnswers: Array.isArray(newValue)
-        ? newValue.join(",")
-        : newValue.toString(),
-    });
+    const updatedAnswer = { answer: newValue as number };
+    onAnswerChange(question.id, updatedAnswer);
   };
 
+  const sortedAnswer: string[] = Array.isArray(userAnswer["answer"])
+    ? userAnswer["answer"]
+    : options;
+
   const handleSortChange = (index: number, newIndex: number) => {
-    const updatedAnswer = Object.entries(userAnswer);
+    const updatedAnswer = [...sortedAnswer];
     const movedItem = updatedAnswer.splice(index, 1)[0];
     updatedAnswer.splice(newIndex, 0, movedItem);
-    onAnswerChange(question.id, { answer: JSON.stringify(updatedAnswer) });
+
+    onAnswerChange(question.id, { answer: updatedAnswer });
   };
 
   console.log("Parsed options:", options);
+
+  console.log("UserAnsw: ", userAnswer);
 
   return (
     <Box
@@ -84,10 +89,8 @@ export function QuestionComponent({
       {question.type === QuestionType.MULTIPLE && (
         <FormControl component="fieldset">
           <RadioGroup
-            value={userAnswer}
-            onChange={(e) =>
-              onAnswerChange(question.id, { answer: e.target.value })
-            }
+            value={userAnswer.answer || ""}
+            onChange={(e) => onAnswerSelection(question.id, e.target.value)}
           >
             {Array.isArray(options) &&
               options.map((option, index) => (
@@ -98,7 +101,7 @@ export function QuestionComponent({
                   label={option}
                   style={{
                     backgroundColor:
-                      userAnswer["answer"] === option ? "lightblue" : "",
+                      userAnswer.answer === option ? "lightblue" : "",
                     borderRadius: "5px",
                     marginBottom: "10px",
                     cursor: "pointer",
@@ -150,19 +153,19 @@ export function QuestionComponent({
           </Typography>
 
           <List>
-            {options.map((option, index) => (
+            {sortedAnswer.map((option, index) => (
               <ListItem key={index} style={{ marginBottom: "10px" }}>
                 <ListItemText primary={`${index + 1}. ${option}`} />
                 <ListItemSecondaryAction>
                   <Button
-                    onClick={() => handleSortChange(index, index - 1)}
+                    onClick={() => handleSortChange(index, index - 1)} // Move up
                     disabled={index === 0}
                     size="large"
                   >
                     ↑
                   </Button>
                   <Button
-                    onClick={() => handleSortChange(index, index + 1)}
+                    onClick={() => handleSortChange(index, index + 1)} // Move down
                     disabled={index === options.length - 1}
                     size="large"
                   >
