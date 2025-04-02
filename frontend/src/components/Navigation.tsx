@@ -21,7 +21,16 @@ export function Navigation() {
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h6">QuizTrivia</Typography>
+        <Typography
+          onClick={() => navigate("/quizzes")}
+          style={{
+            cursor: "pointer",
+            color: "white",
+            textDecoration: "none",
+          }}
+        >
+          QuizTrivia
+        </Typography>
 
         <Box
           sx={{

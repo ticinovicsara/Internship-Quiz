@@ -1,0 +1,7 @@
+export enum QuestionType {
+  MULTIPLE = "MULTIPLE",
+  FILL_IN_THE_BLANK = "FILL_IN_THE_BLANK",
+  MATCHING = "MATCHING",
+  SLIDER = "SLIDER",
+  SORT = "SORT",
+}

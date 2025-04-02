@@ -7,7 +7,6 @@ import { QuestionComponent } from "../components/QuestionComponent";
 import { ScoreSection } from "../components/ScoreSection";
 import { Navigation } from "../components/Navigation";
 import { QuestionHeader } from "../components/QuestionHeader";
-
 export function QuizPage() {
   const { quizId } = useParams<{ quizId?: string }>();
   const { quiz, loading, error } = useQuiz(quizId ?? "");
@@ -27,8 +26,14 @@ export function QuizPage() {
     setShowImage(false);
   };
 
-  const handleAnswerChange = (questionId: number, answer: string) => {
-    setUserAnswers({ ...userAnswers, [questionId]: answer });
+  const handleAnswerChange = (
+    questionId: number,
+    answer: { [key: string]: string }
+  ) => {
+    setUserAnswers((prevState) => ({
+      ...prevState,
+      [questionId]: answer.answer,
+    }));
   };
 
   const calculateScore = () => {
@@ -37,7 +42,9 @@ export function QuizPage() {
     let totalScore = 0;
     quiz.questions.forEach((question: Question) => {
       const correctAnswers: string[] =
-        typeof question.answer === "string" ? JSON.parse(question.answer) : [];
+        typeof question.corrAnswer === "string"
+          ? JSON.parse(question.corrAnswer)
+          : [];
 
       if (
         userAnswers[question.id] &&
@@ -74,10 +81,6 @@ export function QuizPage() {
   }
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
-  const options = currentQuestion.options || [];
-  const correctAnswers = currentQuestion.answer
-    ? JSON.parse(currentQuestion.answer)
-    : [];
 
   return (
     <Box
@@ -92,18 +95,17 @@ export function QuizPage() {
         title={quiz.title}
         imageURL={showImage ? quiz.imageURL : ""}
       />
-      {quizStarted && currentQuestion ? (
+
+      {!quizStarted && (
         <Button variant="contained" color="primary" onClick={startQuiz}>
           Start Quiz
         </Button>
-      ) : (
+      )}
+
+      {quizStarted && currentQuestion && (
         <QuestionComponent
-          question={{
-            ...currentQuestion,
-            options: options,
-            answer: correctAnswers,
-          }}
-          userAnswer={userAnswers[currentQuestion.id] || ""}
+          question={currentQuestion}
+          userAnswer={{ answer: userAnswers[currentQuestion.id] || "" }}
           onAnswerChange={handleAnswerChange}
         />
       )}
