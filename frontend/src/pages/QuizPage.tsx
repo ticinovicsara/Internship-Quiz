@@ -2,12 +2,11 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Typography, Button, Box } from "@mui/material";
 import { useQuiz } from "../hooks/useQuiz";
-import { Question } from "../types/question";
 import { QuestionComponent } from "../components/QuestionComponent";
-import { ScoreSection } from "../components/ScoreSection";
 import { Navigation } from "../components/Navigation";
 import { QuestionHeader } from "../components/QuestionHeader";
-import { QuestionType } from "../types/questionType";
+import { calculateScore } from "../utils/calculateScore";
+import { ScoreSection } from "../components/ScoreSection";
 export function QuizPage() {
   const { quizId } = useParams<{ quizId?: string }>();
   const { quiz, loading, error } = useQuiz(quizId ?? "");
@@ -48,45 +47,17 @@ export function QuizPage() {
     handleAnswerChange(questionId, updatedAnswer);
   };
 
-  const calculateScore = () => {
-    if (!quiz) return;
-
-    let totalScore = 0;
-    quiz.questions.forEach((question: Question) => {
-      const correctAnswers: string[] =
-        typeof question.corrAnswer === "string"
-          ? JSON.parse(question.corrAnswer)
-          : question.corrAnswer;
-
-      if (question.type === QuestionType.MATCHING) {
-        const userAnswer: { [key: string]: string } = userAnswers[question.id];
-        let correct = true;
-        correctAnswers.forEach((correctPair) => {
-          const [item, correctOption] = correctPair.split("-");
-          if (userAnswer[item] !== correctOption) {
-            correct = false;
-          }
-        });
-        if (correct) {
-          totalScore++;
-        }
-      } else if (
-        userAnswers[question.id] &&
-        correctAnswers.includes(Object.values(userAnswers[question.id])[0])
-      ) {
-        totalScore++;
-      }
-    });
-    setScore(totalScore);
-  };
-
   const finishQuiz = () => {
-    calculateScore();
+    const totalScore = quiz ? calculateScore(quiz.questions, userAnswers) : 0;
+    setScore(totalScore);
     setQuizStarted(false);
-    setUsers([...users, { username: "User1", score }]);
+    setUsers([...users, { username: "User1", score: totalScore }]);
   };
 
   const goToNextQuestion = () => {
+    const updatedScore = calculateScore(quiz?.questions ?? [], userAnswers);
+    setScore(updatedScore);
+
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
   };
 
