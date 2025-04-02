@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from '@prisma/client';
+import { PostResultsDto } from './dto/post-results.dto';
 
 @Injectable()
 export class UserService {
@@ -11,6 +12,25 @@ export class UserService {
 
   async getAll() {
     return this.prisma.user.findMany({});
+  }
+
+  async getLeaderboard() {
+    return this.prisma.user.findMany({
+      select: {
+        username: true,
+        scores: {
+          take: 1,
+          orderBy: {
+            points: 'desc',
+          },
+        },
+      },
+      orderBy: {
+        scores: {
+          _count: 'desc',
+        },
+      },
+    });
   }
 
   async register(data: RegisterUserDto) {
@@ -73,5 +93,44 @@ export class UserService {
 
     await this.prisma.user.delete({ where: { id } });
     return true;
+  }
+
+  async postUserResults(body: PostResultsDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { username: body.username },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const existingScore = await this.prisma.score.findFirst({
+      where: {
+        userId: user.id,
+        quizId: body.quizid,
+      },
+    });
+
+    if (existingScore) {
+      if (existingScore.points < body.score) {
+        await this.prisma.score.update({
+          where: { id: existingScore.id },
+          data: { points: body.score },
+        });
+      }
+    } else {
+      await this.prisma.score.create({
+        data: {
+          userId: user.id,
+          quizId: body.quizid,
+          points: body.score,
+        },
+      });
+    }
+
+    return {
+      message: 'Score submitted successfully',
+      score: body.score,
+    };
   }
 }

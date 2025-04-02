@@ -8,11 +8,14 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  UserResponseDto,
+  RegisterUserDto,
+  PostResultsDto,
+  UpdateUserDto,
+} from './dto';
+import { UserService } from './user.service';
 
 @ApiTags('Users')
 @Controller('users')
@@ -22,6 +25,11 @@ export class UserController {
   @Get()
   getAll() {
     return this.userService.getAll();
+  }
+
+  @Get('/scores')
+  getScores() {
+    return this.userService.getLeaderboard();
   }
 
   @Get(':id')
@@ -36,6 +44,11 @@ export class UserController {
   @Post('register')
   register(@Body() body: RegisterUserDto) {
     return this.userService.register(body);
+  }
+
+  @Post('/score/:id')
+  postResults(@Body() body: PostResultsDto) {
+    return this.userService.postUserResults(body);
   }
 
   @Put(':id')
