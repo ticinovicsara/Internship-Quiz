@@ -29,6 +29,14 @@ export class QuizService {
     });
   }
 
+  async findCategories() {
+    return this.prisma.quiz.findMany({
+      include: {
+        category: true,
+      },
+    });
+  }
+
   async create(data: CreateQuizDto): Promise<Quiz> {
     const existingCategory = await this.prisma.category.findFirst({
       where: { name: data.categoryName },

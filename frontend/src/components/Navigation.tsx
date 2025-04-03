@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
-import { isAuthenticated, logout } from "../utils/auth";
+import { isAdmin, isAuthenticated, logout } from "../utils/auth";
 import { getUsernameFromToken } from "../utils/getUsername";
+import { AdminButton } from "./AdminButton";
 
 export function Navigation() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export function Navigation() {
             <Typography sx={{ color: "white", marginRight: "10px" }}>
               <b>{username}</b>
             </Typography>
+            {isAdmin() && <AdminButton />}
             <Button variant="outlined" color="error" onClick={logout}>
               Logout
             </Button>
