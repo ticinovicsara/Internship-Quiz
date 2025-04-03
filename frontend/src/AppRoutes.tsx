@@ -5,11 +5,14 @@ import {
   NotFoundPage,
   LoginPage,
   RegisterPage,
+  AddQuizPage,
+  DeleteQuizPage,
 } from "./pages";
 import ProtectedRoute from "./components/ProtectedRoute";
 import paths from "./utils/paths";
 import { useEffect } from "react";
 import { isAuthenticated } from "./utils/auth";
+import AdminRoute from "./components/AdminRoute";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -28,6 +31,11 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route path={paths.QUIZZES} element={<QuizzesPage />} />
         <Route path={paths.QUIZ(":quizId")} element={<QuizPage />} />
+      </Route>
+
+      <Route element={<AdminRoute />}>
+        <Route path={paths.ADDQUIZ} element={<AddQuizPage />} />
+        <Route path={paths.DELETEQUIZ} element={<DeleteQuizPage />} />
       </Route>
 
       <Route path={paths.NOTFOUND} element={<NotFoundPage />} />

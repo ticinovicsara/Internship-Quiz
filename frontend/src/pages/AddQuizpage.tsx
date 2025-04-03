@@ -1,38 +1,68 @@
 import { useState, useEffect } from "react";
 import { TextField, Button, MenuItem, Box, Typography } from "@mui/material";
+import { useCategories } from "../hooks/useCategories";
+import { Category } from "../types/category";
+import { createQuiz } from "../services/createQuiz";
+import { toast } from "react-toastify";
+import { CreateQuizType } from "../types/createQuiz";
+import { Question } from "../types/question";
+import { QuestionForm } from "../components/QuestionForm";
 
-export function AddQuiz() {
+export function AddQuizPage() {
   const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState("");
   const [imageURL, setImageURL] = useState("");
-  const [questions, setQuestions] = useState([""]);
-  const [categories, setCategories] = useState([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const { categories: fetchedCategories } = useCategories();
 
   useEffect(() => {
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data) => setCategories(data));
-  }, []);
+    if (fetchedCategories.length > 0) {
+      setCategories(fetchedCategories);
+    }
+  }, [fetchedCategories]);
+
+  console.log("CAT: ", categories);
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, ""]);
+    setQuestions([...questions]);
   };
 
-  const handleQuestionChange = (index, value) => {
+  const handleQuestionChange = (index: number, field: string, value: any) => {
     const newQuestions = [...questions];
-    newQuestions[index] = value;
+    if (newQuestions[index]) {
+      (newQuestions[index] as any)[field] = value;
+    }
     setQuestions(newQuestions);
   };
 
-  const handleSubmit = (event) => {
+  const handleOptionChange = (
+    index: number,
+    optionIndex: number,
+    value: string
+  ) => {
+    const updatedQuestions = [...questions];
+    if (updatedQuestions[index] && updatedQuestions[index].options) {
+      updatedQuestions[index].options[optionIndex] = value;
+    }
+    setQuestions(updatedQuestions);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const quizData = { title, categoryId, imageURL, questions };
+    const quizData: CreateQuizType = { title, category, imageURL, questions };
+
     console.log("Submitting quiz:", quizData);
-    fetch("/api/quizzes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(quizData),
-    });
+
+    try {
+      const response = createQuiz(quizData);
+      if (response) {
+        console.log("Quiz created successfully:", response);
+        toast.success("Quiz created successfully!");
+      }
+    } catch (error) {
+      console.error("Error creating quiz:", error);
+    }
   };
 
   return (
@@ -45,7 +75,7 @@ export function AddQuiz() {
         Add new quiz
       </Typography>
       <TextField
-        label="Naslov"
+        label="Title"
         fullWidth
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -54,10 +84,14 @@ export function AddQuiz() {
       />
       <TextField
         select
-        label="Kategorija"
+        label="Category"
         fullWidth
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
+        value={category?.name || ""}
+        onChange={(e) => {
+          const selectedCategory =
+            categories.find((cat) => cat.id === e.target.value) || null;
+          setCategory(selectedCategory);
+        }}
         required
         sx={{ mb: 2 }}
       >
@@ -68,23 +102,26 @@ export function AddQuiz() {
         ))}
       </TextField>
       <TextField
-        label="URL slike"
+        label="Image URL"
         fullWidth
         value={imageURL}
         onChange={(e) => setImageURL(e.target.value)}
         sx={{ mb: 2 }}
       />
-      <Typography variant="h6">Pitanja</Typography>
-      {questions.map((q, index) => (
-        <TextField
+      <Typography variant="h6">Questions</Typography>
+      {questions.map((question, index) => (
+        <QuestionForm
           key={index}
-          label={`Pitanje ${index + 1}`}
-          fullWidth
-          value={q}
-          onChange={(e) => handleQuestionChange(index, e.target.value)}
-          sx={{ mb: 2 }}
+          question={question}
+          index={index}
+          onQuestionChange={handleQuestionChange}
+          onOptionChange={handleOptionChange}
         />
       ))}
+
+      <Button onClick={handleAddQuestion} variant="outlined" sx={{ mb: 2 }}>
+        Add Question
+      </Button>
       <Button onClick={handleAddQuestion} variant="outlined" sx={{ mb: 2 }}>
         Add quiz
       </Button>

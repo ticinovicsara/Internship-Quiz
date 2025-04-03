@@ -30,9 +30,10 @@ export class QuizService {
   }
 
   async findCategories() {
-    return this.prisma.quiz.findMany({
+    return this.prisma.category.findMany({
       include: {
-        category: true,
+        id: true,
+        name: true,
       },
     });
   }

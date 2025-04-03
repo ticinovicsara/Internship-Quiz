@@ -6,6 +6,7 @@ import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { isAdmin, isAuthenticated, logout } from "../utils/auth";
 import { getUsernameFromToken } from "../utils/getUsername";
 import { AdminButton } from "./AdminButton";
+import paths from "../utils/paths";
 
 export function Navigation() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export function Navigation() {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography
-          onClick={() => navigate("/quizzes")}
+          onClick={() => navigate(paths.QUIZZES)}
           style={{
             cursor: "pointer",
             color: "white",

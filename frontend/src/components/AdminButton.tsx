@@ -28,7 +28,7 @@ export const AdminButton = () => {
         <MenuItem
           onClick={() => {
             handleClose();
-            navigate("/add-quiz");
+            navigate(paths.ADDQUIZ);
           }}
         >
           Add Quiz
