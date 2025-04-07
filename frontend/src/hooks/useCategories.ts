@@ -11,6 +11,9 @@ export function useCategories() {
     const loadCategories = async () => {
       try {
         const response = await fetchCategories();
+
+        console.log("API RESPONSE: ", response.data);
+
         setCategories(response);
         setLoading(false);
       } catch (err) {

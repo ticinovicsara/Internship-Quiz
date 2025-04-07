@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Button, Box, Card } from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { useQuiz } from "../hooks/useQuiz";
 import { QuestionComponent } from "../components/QuestionComponent";
 import { Navigation } from "../components/Navigation";
@@ -8,7 +8,7 @@ import { QuestionHeader } from "../components/QuestionHeader";
 import { calculateScore } from "../utils/calculate/calculateScore";
 import { ScoreSection } from "../components/ScoreSection";
 import paths from "../utils/paths";
-import { getUsernameFromToken } from "../utils/getUsername";
+import Leaderboard from "../components/Leaderboard";
 
 export function QuizPage() {
   const navigate = useNavigate();
@@ -25,20 +25,17 @@ export function QuizPage() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
 
-  const username = getUsernameFromToken();
-
   const startQuiz = () => {
     setScore(0);
     setUserAnswers({});
     setCurrentQuestionIndex(0);
     setShowImage(false);
     setQuizStarted(true);
-    setQuizFinished(false);
   };
 
   const handleAnswerChange = (
     questionId: number,
-    answer: { [key: string]: any }
+    answer: { [key: string]: any; questionType?: String }
   ) => {
     setUserAnswers((prevState) => ({
       ...prevState,
@@ -107,14 +104,40 @@ export function QuizPage() {
         imageURL={showImage ? quiz.imageURL : ""}
       />
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={quizFinished ? () => goToHome : startQuiz}
-        style={{ marginTop: "20px" }}
-      >
-        {quizFinished ? "Go to Home" : "Start Quiz"}
-      </Button>
+      {!quizStarted && !quizFinished && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={startQuiz}
+          style={{
+            marginTop: "20px",
+            backgroundColor: "#1976d2",
+            color: "#fff",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            borderRadius: "8px",
+          }}
+        >
+          Start Quiz
+        </Button>
+      )}
+
+      {quizFinished && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={goToHome}
+          style={{
+            marginTop: "20px",
+            color: "#fff",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            borderRadius: "8px",
+          }}
+        >
+          Go to Home
+        </Button>
+      )}
 
       {quizStarted && !quizFinished && currentQuestion && (
         <QuestionComponent
@@ -158,42 +181,11 @@ export function QuizPage() {
       )}
 
       {quizFinished && (
-        <Box
-          style={{
-            marginTop: "20px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Card
-            style={{
-              backgroundColor: "#F8DE7E",
-              width: "70vw",
-              textAlign: "center",
-            }}
-          >
-            <Typography
-              variant="h6"
-              gutterBottom
-              style={{ textDecoration: "underline", marginBottom: "10px" }}
-            >
-              Leaderboard
-            </Typography>
-            {sortedUsers.map((user, index) => (
-              <Typography key={index}>
-                {index + 1}. {username} - {user.score} points
-              </Typography>
-            ))}
-          </Card>
-
-          <Typography variant="h6" style={{ marginTop: "20px" }}>
-            Your score: {score}
-          </Typography>
-          <Typography variant="h6" style={{ marginTop: "10px" }}>
-            Your Rank: {userRank}
-          </Typography>
-        </Box>
+        <Leaderboard
+          sortedUsers={sortedUsers}
+          score={score}
+          userRank={userRank}
+        />
       )}
     </Box>
   );

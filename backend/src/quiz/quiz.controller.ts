@@ -30,7 +30,7 @@ export class QuizController {
   }
 
   @Get('/categories')
-  findCategories(@Param('id') id: string) {
+  findCategories() {
     return this.quizService.findCategories();
   }
 

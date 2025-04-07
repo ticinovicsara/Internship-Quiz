@@ -30,12 +30,19 @@ export class QuizService {
   }
 
   async findCategories() {
-    return this.prisma.category.findMany({
-      include: {
-        id: true,
-        name: true,
-      },
-    });
+    try {
+      const categories = await this.prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+      console.log('Fetched categories:', categories);
+      return categories;
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
   }
 
   async create(data: CreateQuizDto): Promise<Quiz> {

@@ -43,13 +43,21 @@ export function QuestionComponent({
   const itemsToMatch = correctAnswers.map((pair) => pair.split("-")[0]);
 
   const handleMatchChange = (item: string, value: string) => {
-    const updatedAnswers = { ...userAnswer, [item]: value };
-    onAnswerChange(question.id, updatedAnswers);
+    const currentAnswer = Array.isArray(userAnswer)
+      ? {}
+      : { ...(userAnswer || {}) };
+
+    const cleanedAnswer = Object.fromEntries(
+      Object.entries(currentAnswer).filter(([_k, v]) => v !== value)
+    );
+
+    cleanedAnswer[item] = value;
+
+    onAnswerChange(question.id, cleanedAnswer);
   };
 
   const handleSliderChange = (_event: Event, newValue: number | number[]) => {
-    const updatedAnswer = { answer: newValue as number };
-    onAnswerChange(question.id, updatedAnswer);
+    onAnswerChange(question.id, { answer: String(newValue) });
   };
 
   const sortedAnswer: string[] = Array.isArray(userAnswer["answer"])
@@ -181,12 +189,10 @@ export function QuestionComponent({
       {question.type === QuestionType.SLIDER && (
         <Box style={{ width: "100%", marginTop: "20px" }}>
           <Typography variant="body1" gutterBottom>
-            {userAnswer["answer"]
-              ? `Value: ${userAnswer["answer"]}`
-              : "Value: 0"}
+            Value: {userAnswer?.answer ?? 0}
           </Typography>
           <Slider
-            value={Number(userAnswer["answer"]) || 0}
+            value={Number(userAnswer?.answer) || 0}
             onChange={handleSliderChange}
             aria-labelledby="slider"
             valueLabelDisplay="auto"
