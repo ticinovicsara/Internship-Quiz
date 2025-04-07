@@ -6,7 +6,7 @@ export const postUserReuslts = async (
   score: number
 ) => {
   try {
-    const response = await apiClient.post(`/quiz/${quizId}`, {
+    const response = await apiClient.post(`/user/scores/${quizId}`, {
       username,
       score,
     });

@@ -24,14 +24,14 @@ export class QuizController {
     return this.quizService.findAll();
   }
 
-  @Get(':id')
-  findQuiz(@Param('id') id: string) {
-    return this.quizService.findQuiz(id);
-  }
-
   @Get('/categories')
   findCategories() {
     return this.quizService.findCategories();
+  }
+
+  @Get(':id')
+  findQuiz(@Param('id') id: string) {
+    return this.quizService.findQuiz(id);
   }
 
   @ApiBody({ type: CreateQuizDto })

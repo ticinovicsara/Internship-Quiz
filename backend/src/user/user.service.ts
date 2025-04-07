@@ -14,23 +14,23 @@ export class UserService {
     return this.prisma.user.findMany({});
   }
 
-  async getLeaderboard() {
-    return this.prisma.user.findMany({
-      select: {
-        username: true,
-        scores: {
-          take: 1,
-          orderBy: {
-            points: 'desc',
-          },
+  async getLeaderboard(quizId: string) {
+    const scores = await this.prisma.score.findMany({
+      where: { quizId },
+      include: {
+        user: {
+          select: { username: true, scores: true },
         },
       },
       orderBy: {
-        scores: {
-          _count: 'desc',
-        },
+        points: 'desc',
       },
     });
+
+    return scores.map((score) => ({
+      username: score.user.username,
+      points: score.points,
+    }));
   }
 
   async register(data: RegisterUserDto) {

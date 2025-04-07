@@ -3,8 +3,9 @@ const paths = {
   REGISTER: "/register",
   QUIZZES: "/quizzes",
   QUIZ: (quizId: string) => `/quiz/${quizId}`,
-  ADDQUIZ: "/addquiz",
-  DELETEQUIZ: "/deletequiz",
+  ADD_QUIZ: "/addquiz",
+  ADD_CATEGORY: "/addcategory",
+  DELETE_QUIZ: "/deletequiz",
   NOTFOUND: "/404",
   OTHER: "/404",
 };

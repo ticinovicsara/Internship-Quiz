@@ -5,3 +5,4 @@ export * from "./LoginPage";
 export * from "./RegisterPage";
 export * from "./AddQuizPage";
 export * from "./DeleteQuizPage";
+export * from "./AddCategoryPage";

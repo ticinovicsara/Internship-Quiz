@@ -7,6 +7,7 @@ import {
   RegisterPage,
   AddQuizPage,
   DeleteQuizPage,
+  AddCategoryPage,
 } from "./pages";
 import ProtectedRoute from "./components/ProtectedRoute";
 import paths from "./utils/paths";
@@ -34,8 +35,9 @@ const AppRoutes = () => {
       </Route>
 
       <Route element={<AdminRoute />}>
-        <Route path={paths.ADDQUIZ} element={<AddQuizPage />} />
-        <Route path={paths.DELETEQUIZ} element={<DeleteQuizPage />} />
+        <Route path={paths.ADD_QUIZ} element={<AddQuizPage />} />
+        <Route path={paths.ADD_CATEGORY} element={<AddCategoryPage />} />
+        <Route path={paths.DELETE_QUIZ} element={<DeleteQuizPage />} />
       </Route>
 
       <Route path={paths.NOTFOUND} element={<NotFoundPage />} />

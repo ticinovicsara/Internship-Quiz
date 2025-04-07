@@ -5,7 +5,9 @@ const API_BASE_URL = "http://localhost:3000";
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
+    Accept: "application/json",
     "Content-Type": "application/json",
+    Authorization: "Bearer <your_valid_token>",
   },
 });
 

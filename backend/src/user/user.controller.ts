@@ -27,9 +27,9 @@ export class UserController {
     return this.userService.getAll();
   }
 
-  @Get('/scores')
-  getScores() {
-    return this.userService.getLeaderboard();
+  @Get('/leaderboard/:quizId')
+  getLeaderboard(@Param('quizId') quizId: string) {
+    return this.userService.getLeaderboard(quizId);
   }
 
   @Get(':id')

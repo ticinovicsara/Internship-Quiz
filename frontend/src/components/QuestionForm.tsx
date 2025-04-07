@@ -7,6 +7,7 @@ import {
   Select,
 } from "@mui/material";
 import { Question } from "../types/question";
+import { QuestionType } from "../types/questionType"; // ili gde već držiš enum
 
 interface QuestionFormProps {
   question: Question;
@@ -38,14 +39,17 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
           onChange={(e) => onQuestionChange(index, "type", e.target.value)}
           label="Type"
         >
-          <MenuItem value="multipleChoice">Multiple Choice</MenuItem>
-          <MenuItem value="text">Text</MenuItem>
+          {Object.entries(QuestionType).map(([key, value]) => (
+            <MenuItem key={key} value={value}>
+              {value.replace(/_/g, " ")}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
 
-      {question.type === "multipleChoice" && (
+      {question.type === QuestionType.MULTIPLE && (
         <>
-          {question.options.map((option, optionIndex) => (
+          {(question.options ?? []).map((option, optionIndex) => (
             <TextField
               key={optionIndex}
               label={`Option ${optionIndex + 1}`}
@@ -57,17 +61,15 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               sx={{ mb: 2 }}
             />
           ))}
-          <TextField
-            label="Correct Answer"
-            fullWidth
-            value={question.corrAnswer}
-            onChange={(e) =>
-              onQuestionChange(index, "corrAnswer", e.target.value)
-            }
-            sx={{ mb: 2 }}
-          />
         </>
       )}
+      <TextField
+        label="Correct Answer"
+        fullWidth
+        value={question.corrAnswer}
+        onChange={(e) => onQuestionChange(index, "corrAnswer", e.target.value)}
+        sx={{ mb: 2 }}
+      />
     </Box>
   );
 };

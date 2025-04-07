@@ -7,11 +7,13 @@ import { toast } from "react-toastify";
 import { CreateQuizType } from "../types/createQuiz";
 import { Question } from "../types/question";
 import { QuestionForm } from "../components/QuestionForm";
+import { Navigation } from "../components/Navigation";
+import { initialQuestions } from "../utils/initialQuestions";
 
 export function AddQuizPage() {
   const [title, setTitle] = useState("");
   const [imageURL, setImageURL] = useState("");
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [category, setCategory] = useState<Category | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const { categories: fetchedCategories } = useCategories();
@@ -23,10 +25,6 @@ export function AddQuizPage() {
   }, [fetchedCategories]);
 
   console.log("CAT: ", categories);
-
-  const handleAddQuestion = () => {
-    setQuestions([...questions]);
-  };
 
   const handleQuestionChange = (index: number, field: string, value: any) => {
     const newQuestions = [...questions];
@@ -66,65 +64,69 @@ export function AddQuizPage() {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto", p: 2 }}
-    >
-      <Typography variant="h5" gutterBottom>
-        Add new quiz
-      </Typography>
-      <TextField
-        label="Title"
-        fullWidth
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-        sx={{ mb: 2 }}
-      />
-      <TextField
-        select
-        label="Category"
-        fullWidth
-        value={category?.name || ""}
-        onChange={(e) => {
-          const selectedCategory =
-            categories.find((cat) => cat.id === e.target.value) || null;
-          setCategory(selectedCategory);
-        }}
-        required
-        sx={{ mb: 2 }}
+    <>
+      <Navigation />
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ maxWidth: 400, margin: "auto", p: 2, marginTop: "20px" }}
       >
-        {categories.map((cat) => (
-          <MenuItem key={cat.id} value={cat.id}>
-            {cat.name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        label="Image URL"
-        fullWidth
-        value={imageURL}
-        onChange={(e) => setImageURL(e.target.value)}
-        sx={{ mb: 2 }}
-      />
-      <Typography variant="h6">Questions</Typography>
-      {questions.map((question, index) => (
-        <QuestionForm
-          key={index}
-          question={question}
-          index={index}
-          onQuestionChange={handleQuestionChange}
-          onOptionChange={handleOptionChange}
+        <Typography variant="h5" gutterBottom>
+          Add new quiz
+        </Typography>
+        <TextField
+          label="Title"
+          fullWidth
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          sx={{ mb: 2 }}
         />
-      ))}
+        <TextField
+          select
+          label="Category"
+          fullWidth
+          value={category?.name || ""}
+          onChange={(e) => {
+            const selectedCategory =
+              categories.find((cat) => cat.id === e.target.value) || null;
+            setCategory(selectedCategory);
+          }}
+          required
+          sx={{ mb: 2 }}
+        >
+          {categories.map((cat) => (
+            <MenuItem key={cat.id} value={cat.id}>
+              {cat.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          label="Image URL"
+          fullWidth
+          value={imageURL}
+          onChange={(e) => setImageURL(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <Typography variant="h6">Questions</Typography>
+        {questions.map((question, index) => (
+          <QuestionForm
+            key={index}
+            question={question}
+            index={index}
+            onQuestionChange={handleQuestionChange}
+            onOptionChange={handleOptionChange}
+          />
+        ))}
 
-      <Button onClick={handleAddQuestion} variant="outlined" sx={{ mb: 2 }}>
-        Add Question
-      </Button>
-      <Button onClick={handleAddQuestion} variant="outlined" sx={{ mb: 2 }}>
-        Add quiz
-      </Button>
-    </Box>
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ mb: 2, display: "block" }}
+        >
+          Add quiz
+        </Button>
+      </Box>
+    </>
   );
 }

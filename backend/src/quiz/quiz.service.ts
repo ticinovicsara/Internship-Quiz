@@ -37,11 +37,12 @@ export class QuizService {
           name: true,
         },
       });
-      console.log('Fetched categories:', categories);
       return categories;
     } catch (error) {
-      console.error('Error fetching categories:', error);
-      return [];
+      return {
+        success: false,
+        message: 'Kategorije nisu dohvacene.',
+      };
     }
   }
 

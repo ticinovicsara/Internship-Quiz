@@ -28,7 +28,7 @@ export const AdminButton = () => {
         <MenuItem
           onClick={() => {
             handleClose();
-            navigate(paths.ADDQUIZ);
+            navigate(paths.ADD_QUIZ);
           }}
         >
           Add Quiz
@@ -36,10 +36,18 @@ export const AdminButton = () => {
         <MenuItem
           onClick={() => {
             handleClose();
-            navigate(paths.DELETEQUIZ);
+            navigate(paths.DELETE_QUIZ);
           }}
         >
           Delete Quiz
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            navigate(paths.ADD_CATEGORY);
+          }}
+        >
+          Add Category
         </MenuItem>
       </Menu>
     </>
