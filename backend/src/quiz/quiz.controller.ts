@@ -43,8 +43,8 @@ export class QuizController {
 
   @Post('/categories')
   @UseGuards(JwtAuthGuard, AdminGuard)
-  addCategory(@Param('id') id: string) {
-    return this.quizService.addCategory(id);
+  addCategory(@Body('name') name: string) {
+    return this.quizService.addCategory(name);
   }
 
   @ApiBody({ type: UpdateQuizDto })

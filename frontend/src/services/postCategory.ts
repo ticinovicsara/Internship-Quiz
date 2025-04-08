@@ -6,8 +6,6 @@ export const postCategory = async (categoryName: string) => {
       name: categoryName,
     });
 
-    console.log("POST RESPONSE:", response);
-
     return response.data;
   } catch (err) {
     console.error("Error adding category:", err);

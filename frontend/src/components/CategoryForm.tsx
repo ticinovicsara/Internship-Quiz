@@ -14,7 +14,14 @@ export const CategoryForm = ({
   error,
 }: Props) => {
   return (
-    <form onSubmit={onSubmit}>
+    <form
+      onSubmit={onSubmit}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
       <TextField
         label="Category Name"
         fullWidth

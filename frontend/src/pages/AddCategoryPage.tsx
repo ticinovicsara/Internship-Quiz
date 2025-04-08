@@ -1,32 +1,31 @@
-import { useEffect, useState } from "react";
-import { Box, Typography, Snackbar } from "@mui/material";
+import { useState } from "react";
+import {
+  Box,
+  Typography,
+  Snackbar,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import { useCategories } from "../hooks/useCategories";
-import { Category } from "../types/category";
 import { postCategory } from "../services/postCategory";
 import { CategoryForm } from "../components/CategoryForm";
 import { Navigation } from "../components/Navigation";
 
 export const AddCategoryPage = () => {
   const [categoryName, setCategoryName] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error">("success");
 
-  const apiCategories = useCategories();
-
-  useEffect(() => {
-    if (apiCategories?.categories) {
-      setCategories(apiCategories.categories);
-    }
-  }, [apiCategories]);
+  const { categories, refetch } = useCategories();
 
   const handleAddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
 
     const nameTrimmed = categoryName.trim();
     if (!nameTrimmed) {
-      setError("Category name cannot be empty.");
+      setAlertType("error");
+      setAlertMessage("Category name cannot be empty.");
       return;
     }
 
@@ -35,43 +34,78 @@ export const AddCategoryPage = () => {
     );
 
     if (alreadyExists) {
-      setError("Category already exists.");
+      setAlertType("error");
+      setAlertMessage("Category already exists.");
       return;
     }
 
     try {
-      const newCategory = await postCategory(nameTrimmed);
-      if (newCategory) {
-        setCategories((prev) => [...prev, newCategory]);
+      const result = await postCategory(nameTrimmed);
+
+      if (result?.success === false) {
+        setAlertType("error");
+        setAlertMessage(result.message || "Failed to add category.");
+        return;
+      }
+
+      if (result && result.id) {
+        await refetch();
         setCategoryName("");
-        setSuccess(true);
+        setAlertType("success");
+        setAlertMessage(result.message || "Category added successfully!");
       } else {
-        setError("Something went wrong while adding the category.");
+        setAlertType("error");
+        setAlertMessage("Unexpected server response.");
       }
     } catch (err) {
-      setError("Failed to add category.");
+      setAlertType("error");
+      setAlertMessage("Failed to add category.");
     }
   };
 
   return (
     <>
       <Navigation />
-      <Box sx={{ maxWidth: 500, margin: "auto", padding: 4 }}>
-        <Typography variant="h4" gutterBottom>
+      <Box
+        sx={{
+          maxWidth: 500,
+          margin: "auto",
+          padding: 4,
+        }}
+      >
+        <Typography variant="h4" gutterBottom style={{ textAlign: "center" }}>
           Add Category
         </Typography>
         <CategoryForm
           categoryName={categoryName}
           onCategoryNameChange={setCategoryName}
           onSubmit={handleAddCategory}
-          error={error}
+          error={alertMessage}
         />
         <Snackbar
-          open={success}
-          autoHideDuration={3000}
-          onClose={() => setSuccess(false)}
-          message="Category added successfully!"
+          open={!!alertMessage}
+          autoHideDuration={4000}
+          onClose={() => setAlertMessage("")}
+          message={alertMessage}
+          ContentProps={{
+            sx: {
+              backgroundColor: alertType === "success" ? "green" : "red",
+              color: "#fff",
+            },
+          }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         />
+
+        <Typography variant="h6" sx={{ mt: 5, textAlign: "center" }}>
+          Current Categories
+        </Typography>
+        <List>
+          {categories.map((category) => (
+            <ListItem key={category.id} style={{ textAlign: "center" }}>
+              <ListItemText secondary={category.name} />
+            </ListItem>
+          ))}
+        </List>
       </Box>
     </>
   );
