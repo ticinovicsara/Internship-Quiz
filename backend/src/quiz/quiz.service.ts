@@ -46,6 +46,22 @@ export class QuizService {
     }
   }
 
+  async addCategory(id: string) {
+    try {
+      const category = await this.prisma.category.create({
+        data: {
+          name: id,
+        },
+      });
+      return category;
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Kategorija nije dodana.',
+      };
+    }
+  }
+
   async create(data: CreateQuizDto): Promise<Quiz> {
     const existingCategory = await this.prisma.category.findFirst({
       where: { name: data.categoryName },
