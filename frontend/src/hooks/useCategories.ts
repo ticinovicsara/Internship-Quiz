@@ -8,11 +8,20 @@ export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   const loadCategories = useCallback(async () => {
+    const cachedCategories = sessionStorage.getItem("categories");
+
+    if (cachedCategories) {
+      setCategories(JSON.parse(cachedCategories));
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await fetchCategories();
       console.log("API RESPONSE: ", response.data);
       setCategories(response);
+      sessionStorage.setItem("categories", JSON.stringify(response));
       setError("");
     } catch (err) {
       setError("Error fetching categories");

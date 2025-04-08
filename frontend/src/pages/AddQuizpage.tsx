@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { TextField, Button, MenuItem, Box, Typography } from "@mui/material";
 import { useCategories } from "../hooks/useCategories";
 import { Category } from "../types/category";
@@ -9,50 +9,98 @@ import { Question } from "../types/question";
 import { QuestionForm } from "../components/QuestionForm";
 import { Navigation } from "../components/Navigation";
 import { initialQuestions } from "../utils/initialQuestions";
+import { QuestionType } from "../types/questionType";
 
 export function AddQuizPage() {
+  const [, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [category, setCategory] = useState<Category | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const { categories: fetchedCategories } = useCategories();
+  const { categories } = useCategories();
 
   useEffect(() => {
-    if (fetchedCategories.length > 0) {
-      setCategories(fetchedCategories);
+    if (categories.length > 0) {
+      console.log("Fetched Categories: ", categories);
     }
-  }, [fetchedCategories]);
+  }, [categories]);
 
-  console.log("CAT: ", categories);
+  const handleQuestionChange = useCallback(
+    (index: number, field: string, value: any) => {
+      const newQuestions = [...questions];
+      if (newQuestions[index]) {
+        (newQuestions[index] as any)[field] = value;
+      }
+      setQuestions(newQuestions);
+    },
+    [questions]
+  );
 
-  const handleQuestionChange = (index: number, field: string, value: any) => {
-    const newQuestions = [...questions];
-    if (newQuestions[index]) {
-      (newQuestions[index] as any)[field] = value;
-    }
-    setQuestions(newQuestions);
-  };
+  const handleOptionChange = useCallback(
+    (index: number, optionIndex: number, value: string) => {
+      const updatedQuestions = [...questions];
+      if (updatedQuestions[index] && updatedQuestions[index].options) {
+        updatedQuestions[index].options[optionIndex] = value;
+      }
+      setQuestions(updatedQuestions);
+    },
+    [questions]
+  );
 
-  const handleOptionChange = (
-    index: number,
-    optionIndex: number,
-    value: string
-  ) => {
-    const updatedQuestions = [...questions];
-    if (updatedQuestions[index] && updatedQuestions[index].options) {
-      updatedQuestions[index].options[optionIndex] = value;
-    }
-    setQuestions(updatedQuestions);
+  const formatQuestionData = (questions: Question[]) => {
+    return questions.map((q) => {
+      if (q.type === QuestionType.MATCHING) {
+        const formattedOptions = q.options?.map((option) => option.trim());
+        return {
+          ...q,
+          options: formattedOptions,
+          corrAnswer: q.corrAnswer.trim().toString(),
+        };
+      }
+
+      if (q.type === QuestionType.SORT) {
+        return {
+          ...q,
+          corrAnswer: q.corrAnswer.split(" ").join(" "),
+        };
+      }
+
+      return q;
+    });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const quizData: CreateQuizType = { title, category, imageURL, questions };
+
+    const formattedQuestions = formatQuestionData(questions);
+
+    if (formattedQuestions.length !== 5) {
+      toast.error("You must have exactly 5 questions.");
+      return;
+    }
+
+    const missingFields = formattedQuestions.some(
+      (q) => !q.text || !q.corrAnswer
+    );
+
+    if (!title || !category || !imageURL || missingFields) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    setQuestions(formattedQuestions);
+
+    const quizData: CreateQuizType = {
+      title,
+      category,
+      imageURL,
+      questions,
+    };
 
     console.log("Submitting quiz:", quizData);
 
     try {
+      setLoading(true);
       const response = createQuiz(quizData);
       if (response) {
         console.log("Quiz created successfully:", response);
@@ -60,6 +108,8 @@ export function AddQuizPage() {
       }
     } catch (error) {
       console.error("Error creating quiz:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,7 +136,7 @@ export function AddQuizPage() {
           select
           label="Category"
           fullWidth
-          value={category?.name || ""}
+          value={category?.id || ""}
           onChange={(e) => {
             const selectedCategory =
               categories.find((cat) => cat.id === e.target.value) || null;
