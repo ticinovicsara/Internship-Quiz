@@ -32,10 +32,10 @@ export class CreateQuestionDto {
 
   @ApiProperty({
     description: 'Correct answer for the question (optional)',
-    type: 'string',
-    example: 'Paris',
+    oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+    example: ['Paris', 'London', 'Berlin'],
     required: false,
   })
   @IsOptional()
-  corrAnswer?: any;
+  corrAnswer?: string | string[];
 }

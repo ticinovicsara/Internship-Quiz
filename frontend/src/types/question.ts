@@ -3,5 +3,5 @@ export type Question = {
   type: string;
   text: string;
   options?: string[];
-  corrAnswer: string;
+  corrAnswer: string | string[];
 };

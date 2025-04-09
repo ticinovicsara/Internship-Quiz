@@ -1,9 +1,8 @@
-import { Category } from "./category";
 import { Question } from "./question";
 
 export interface CreateQuizType {
   title: string;
-  category: Category | null;
+  categoryId: string;
   imageURL: string;
   questions: Question[];
 }

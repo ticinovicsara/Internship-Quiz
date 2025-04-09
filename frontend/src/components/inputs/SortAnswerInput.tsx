@@ -2,38 +2,54 @@ import React, { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
 
 interface SortProps {
-  corrAnswer: string[]; // backend value, e.g., ["Banana", "Apple", "Orange"]
+  corrAnswer: string[] | string;
+  options: string[];
   onChange: (newValue: string[]) => void;
 }
 
 export const SortAnswerInput: React.FC<SortProps> = ({
   corrAnswer,
+  options,
   onChange,
 }) => {
-  // local state holds the raw comma-separated string that the user types
-  const [inputValue, setInputValue] = useState<string>(
-    Array.isArray(corrAnswer) ? corrAnswer.join(", ") : ""
-  );
+  const toArray = (val: string | string[]): string[] => {
+    if (Array.isArray(val)) return val;
+    return val
+      .split(",")
+      .map((v) => v.trim())
+      .filter((v) => v !== "");
+  };
 
-  // In case the prop changes externally, update the local state.
+  const [inputValue, setInputValue] = useState<string>("");
+
   useEffect(() => {
-    setInputValue(Array.isArray(corrAnswer) ? corrAnswer.join(", ") : "");
-  }, [corrAnswer]);
+    const initial = toArray(corrAnswer);
+
+    if (initial.length === 0 && options.length > 0) {
+      onChange(options);
+      setInputValue(options.join(", "));
+    } else {
+      setInputValue(initial.join(", "));
+    }
+  }, [corrAnswer, options]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleBlur = () => {
+    const inputItems = toArray(inputValue);
+    const filtered = inputItems.filter((item) => options.includes(item));
+    onChange(filtered);
+  };
 
   return (
     <TextField
       label="Correct Order (comma-separated)"
       fullWidth
       value={inputValue}
-      onChange={(e) => setInputValue(e.target.value)}
-      // When the input loses focus, parse it and update the parent's state.
-      onBlur={() => {
-        const newValue = inputValue
-          .split(",")
-          .map((v) => v.trim())
-          .filter((v) => v !== "");
-        onChange(newValue);
-      }}
+      onChange={handleChange}
+      onBlur={handleBlur}
       helperText="Enter the correct order of items. Example: Banana, Apple, Orange"
       sx={{ mb: 2 }}
     />

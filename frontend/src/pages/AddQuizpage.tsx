@@ -54,14 +54,24 @@ export function AddQuizPage() {
         return {
           ...q,
           options: formattedOptions,
-          corrAnswer: q.corrAnswer.trim().toString(),
+          corrAnswer: q.corrAnswer as string,
         };
       }
 
       if (q.type === QuestionType.SORT) {
+        let formattedCorrAnswer: string[];
+        if (typeof q.corrAnswer === "string") {
+          formattedCorrAnswer = [q.corrAnswer.trim()];
+        } else if (Array.isArray(q.corrAnswer)) {
+          formattedCorrAnswer = (q.corrAnswer as string[]).map((item) =>
+            item.trim()
+          );
+        } else {
+          formattedCorrAnswer = [];
+        }
         return {
           ...q,
-          corrAnswer: q.corrAnswer.split(" ").join(" "),
+          corrAnswer: formattedCorrAnswer.join(", "), // Convert array to a string to match the Question type
         };
       }
 
@@ -69,7 +79,7 @@ export function AddQuizPage() {
     });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formattedQuestions = formatQuestionData(questions);
@@ -92,25 +102,33 @@ export function AddQuizPage() {
 
     const quizData: CreateQuizType = {
       title,
-      category,
+      categoryId: category.id,
       imageURL,
-      questions,
+      questions: formattedQuestions,
     };
 
     console.log("Submitting quiz:", quizData);
 
     try {
       setLoading(true);
-      const response = createQuiz(quizData);
+      const response = await createQuiz(quizData);
       if (response) {
         console.log("Quiz created successfully:", response);
         toast.success("Quiz created successfully!");
+        resetForm();
       }
     } catch (error) {
       console.error("Error creating quiz:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setImageURL("");
+    setCategory(null);
+    setQuestions(initialQuestions);
   };
 
   return (

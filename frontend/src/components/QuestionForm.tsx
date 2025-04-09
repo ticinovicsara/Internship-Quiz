@@ -15,6 +15,7 @@ import {
   SliderAnswerInput,
   SortAnswerInput,
   MatchingAnswerInput,
+  QuestionTextInput,
 } from "./inputs";
 
 interface QuestionFormProps {
@@ -37,28 +38,37 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
     onOptionChange(index, optionIndex, e.target.value);
   };
 
-  const handleSortChange = (newValue: string[]) =>
-    onQuestionChange(index, "options", newValue);
-
   const handleMatchingChange = (newValue: string[]) =>
     onQuestionChange(index, "corrAnswer", newValue);
 
-  const handleCorrAnswerChange = (value: any) =>
-    onQuestionChange(index, "corrAnswer", value);
+  const handleCorrAnswerChange = (value: any) => {
+    if (question.type === QuestionType.SORT) {
+      onQuestionChange(index, "corrAnswer", Array.isArray(value) ? value : []);
+    } else {
+      const stringValue = Array.isArray(value)
+        ? value.join(", ")
+        : String(value);
+      onQuestionChange(index, "corrAnswer", stringValue);
+    }
+
+    if (question.type === QuestionType.MULTIPLE) {
+      const options = Array.isArray(value)
+        ? value
+        : String(value)
+            .split(",")
+            .map((v) => v.trim());
+      onQuestionChange(index, "options", options);
+    }
+  };
+
+  const ensureString = (val: string | string[]) =>
+    Array.isArray(val) ? val.join(", ") : val;
 
   return (
     <Box sx={{ mb: 2 }}>
-      <TextField
-        label={`Question ${index + 1} Text`}
-        fullWidth
-        value={question.text}
-        onChange={(e) => onQuestionChange(index, "text", e.target.value)}
-        sx={{
-          mb: 2,
-          border: "2px solid purple",
-          borderRadius: "4px",
-          marginTop: "20px",
-        }}
+      <QuestionTextInput
+        text={question.text}
+        onChange={(newText) => onQuestionChange(index, "text", newText)}
       />
 
       <FormControl fullWidth sx={{ mb: 2 }}>
@@ -79,7 +89,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
       {question.type === QuestionType.FILL_IN_THE_BLANK && (
         <>
           <FillInTheBlankAnswerInput
-            corrAnswer={question.corrAnswer}
+            corrAnswer={ensureString(question.corrAnswer)}
             onChange={handleCorrAnswerChange}
           />
         </>
@@ -102,7 +112,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             question.options.filter((opt) => opt.trim() !== "").length > 0 && (
               <>
                 <MultipleAnswerInput
-                  corrAnswer={question.corrAnswer}
+                  corrAnswer={ensureString(question.corrAnswer)}
                   options={question.options}
                   onChange={handleCorrAnswerChange}
                 />
@@ -114,19 +124,18 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
       {question.type === QuestionType.SLIDER && (
         <>
           <SliderAnswerInput
-            corrAnswer={question.corrAnswer}
+            corrAnswer={ensureString(question.corrAnswer)}
             onChange={handleCorrAnswerChange}
           />
         </>
       )}
 
       {question.type === QuestionType.SORT && (
-        <>
-          <SortAnswerInput
-            corrAnswer={question.options || []}
-            onChange={handleSortChange}
-          />
-        </>
+        <SortAnswerInput
+          corrAnswer={question.corrAnswer}
+          options={question.options ?? []}
+          onChange={handleCorrAnswerChange}
+        />
       )}
 
       {question.type === QuestionType.MATCHING && (
