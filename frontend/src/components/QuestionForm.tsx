@@ -1,3 +1,4 @@
+import React from "react";
 import {
   TextField,
   MenuItem,
@@ -7,8 +8,14 @@ import {
   Select,
 } from "@mui/material";
 import { Question } from "../types/question";
-import { QuestionType } from "../types/questionType"; // ili gde već držiš enum
-import { CorrectAnswerComponent } from "./CorrectAnswerComponent";
+import { QuestionType } from "../types/questionType";
+import {
+  FillInTheBlankAnswerInput,
+  MultipleAnswerInput,
+  SliderAnswerInput,
+  SortAnswerInput,
+  MatchingAnswerInput,
+} from "./inputs";
 
 interface QuestionFormProps {
   question: Question;
@@ -23,15 +30,21 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   onQuestionChange,
   onOptionChange,
 }) => {
-  const handleSortChange = (
+  const handleOptionChange = (
     optionIndex: number,
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const newOptions = [...(question.options ?? [])];
-    newOptions[optionIndex] = e.target.value;
-
-    onQuestionChange(index, "options", newOptions);
+    onOptionChange(index, optionIndex, e.target.value);
   };
+
+  const handleSortChange = (newValue: string[]) =>
+    onQuestionChange(index, "options", newValue);
+
+  const handleMatchingChange = (newValue: string[]) =>
+    onQuestionChange(index, "corrAnswer", newValue);
+
+  const handleCorrAnswerChange = (value: any) =>
+    onQuestionChange(index, "corrAnswer", value);
 
   return (
     <Box sx={{ mb: 2 }}>
@@ -65,10 +78,9 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
       {question.type === QuestionType.FILL_IN_THE_BLANK && (
         <>
-          <CorrectAnswerComponent
-            type={question.type}
+          <FillInTheBlankAnswerInput
             corrAnswer={question.corrAnswer}
-            onChange={(value) => onQuestionChange(index, "corrAnswer", value)}
+            onChange={handleCorrAnswerChange}
           />
         </>
       )}
@@ -81,59 +93,39 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               label={`Option ${optionIndex + 1}`}
               fullWidth
               value={option}
-              onChange={(e) =>
-                onOptionChange(index, optionIndex, e.target.value)
-              }
+              onChange={(e) => handleOptionChange(optionIndex, e)}
               sx={{ mb: 2 }}
             />
           ))}
 
           {question.options &&
             question.options.filter((opt) => opt.trim() !== "").length > 0 && (
-              <CorrectAnswerComponent
-                type={question.type}
-                corrAnswer={question.corrAnswer}
-                onChange={(value) =>
-                  onQuestionChange(index, "corrAnswer", value)
-                }
-                options={question.options}
-              />
+              <>
+                <MultipleAnswerInput
+                  corrAnswer={question.corrAnswer}
+                  options={question.options}
+                  onChange={handleCorrAnswerChange}
+                />
+              </>
             )}
         </>
       )}
 
       {question.type === QuestionType.SLIDER && (
-        <CorrectAnswerComponent
-          type={question.type}
-          corrAnswer={question.corrAnswer}
-          onChange={(value) => onQuestionChange(index, "corrAnswer", value)}
-        />
+        <>
+          <SliderAnswerInput
+            corrAnswer={question.corrAnswer}
+            onChange={handleCorrAnswerChange}
+          />
+        </>
       )}
 
       {question.type === QuestionType.SORT && (
         <>
-          {Array.from({ length: 4 }).map((_, optionIndex) => (
-            <TextField
-              key={optionIndex}
-              label={`Option ${optionIndex + 1}`}
-              fullWidth
-              value={question.options ? question.options[optionIndex] : ""}
-              onChange={(e) => handleSortChange(optionIndex, e)}
-              sx={{ mb: 2 }}
-            />
-          ))}
-
-          {question.options &&
-            question.options.filter((opt) => opt.trim() !== "").length > 0 && (
-              <CorrectAnswerComponent
-                type={question.type}
-                corrAnswer={question.corrAnswer}
-                onChange={(value) =>
-                  onQuestionChange(index, "corrAnswer", value)
-                }
-                options={question.options}
-              />
-            )}
+          <SortAnswerInput
+            corrAnswer={question.options || []}
+            onChange={handleSortChange}
+          />
         </>
       )}
 
@@ -154,10 +146,11 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             sx={{ mb: 2 }}
           />
 
-          <CorrectAnswerComponent
-            type={question.type}
-            corrAnswer={question.corrAnswer}
-            onChange={(value) => onQuestionChange(index, "corrAnswer", value)}
+          <MatchingAnswerInput
+            corrAnswer={
+              Array.isArray(question.corrAnswer) ? question.corrAnswer : []
+            }
+            onChange={handleMatchingChange}
           />
         </>
       )}
