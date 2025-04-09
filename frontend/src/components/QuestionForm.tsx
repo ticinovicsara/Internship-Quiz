@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { Question } from "../types/question";
 import { QuestionType } from "../types/questionType"; // ili gde već držiš enum
+import { CorrectAnswerComponent } from "./CorrectAnswerComponent";
 
 interface QuestionFormProps {
   question: Question;
@@ -22,34 +23,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   onQuestionChange,
   onOptionChange,
 }) => {
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-
-    console.log("Slider value:", value);
-
-    onQuestionChange(index, "corrAnswer", value);
-  };
-
   const handleSortChange = (
     optionIndex: number,
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const newOptions = [...(question.options ?? [])];
     newOptions[optionIndex] = e.target.value;
-
-    onQuestionChange(index, "options", newOptions);
-  };
-
-  const handleMatchingChange = (
-    optionIndex: number,
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const newOptions = [...(question.options ?? [])];
-    newOptions[optionIndex] = e.target.value;
-
-    if (optionIndex === newOptions.length - 1 && e.target.value.trim() !== "") {
-      newOptions.push("");
-    }
 
     onQuestionChange(index, "options", newOptions);
   };
@@ -63,8 +42,9 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         onChange={(e) => onQuestionChange(index, "text", e.target.value)}
         sx={{
           mb: 2,
-          border: "2px solid dodgerblue",
+          border: "2px solid purple",
           borderRadius: "4px",
+          marginTop: "20px",
         }}
       />
 
@@ -85,14 +65,10 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
       {question.type === QuestionType.FILL_IN_THE_BLANK && (
         <>
-          <TextField
-            label="Correct Answer"
-            fullWidth
-            value={question.corrAnswer}
-            onChange={(e) =>
-              onQuestionChange(index, "corrAnswer", e.target.value)
-            }
-            sx={{ mb: 2 }}
+          <CorrectAnswerComponent
+            type={question.type}
+            corrAnswer={question.corrAnswer}
+            onChange={(value) => onQuestionChange(index, "corrAnswer", value)}
           />
         </>
       )}
@@ -111,17 +87,26 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               sx={{ mb: 2 }}
             />
           ))}
+
+          {question.options &&
+            question.options.filter((opt) => opt.trim() !== "").length > 0 && (
+              <CorrectAnswerComponent
+                type={question.type}
+                corrAnswer={question.corrAnswer}
+                onChange={(value) =>
+                  onQuestionChange(index, "corrAnswer", value)
+                }
+                options={question.options}
+              />
+            )}
         </>
       )}
 
       {question.type === QuestionType.SLIDER && (
-        <TextField
-          label="Correct Answer (Number)"
-          fullWidth
-          value={question.corrAnswer}
-          onChange={handleSliderChange}
-          type="number"
-          sx={{ mb: 2 }}
+        <CorrectAnswerComponent
+          type={question.type}
+          corrAnswer={question.corrAnswer}
+          onChange={(value) => onQuestionChange(index, "corrAnswer", value)}
         />
       )}
 
@@ -137,36 +122,45 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
               sx={{ mb: 2 }}
             />
           ))}
+
+          {question.options &&
+            question.options.filter((opt) => opt.trim() !== "").length > 0 && (
+              <CorrectAnswerComponent
+                type={question.type}
+                corrAnswer={question.corrAnswer}
+                onChange={(value) =>
+                  onQuestionChange(index, "corrAnswer", value)
+                }
+                options={question.options}
+              />
+            )}
         </>
       )}
 
       {question.type === QuestionType.MATCHING && (
         <>
-          {(question.options ?? []).map((match, matchIndex) => (
-            <TextField
-              key={matchIndex}
-              label={`Match ${matchIndex + 1} (e.g. "Circle - Round Shape")`}
-              fullWidth
-              value={match}
-              onChange={(e) => handleMatchingChange(matchIndex, e)}
-              sx={{ mb: 2 }}
-            />
-          ))}
-        </>
-      )}
-
-      {question.type !== QuestionType.SLIDER &&
-        question.type !== QuestionType.FILL_IN_THE_BLANK && (
           <TextField
-            label="Correct Answer"
+            label="Matching Options (Right Side Only)"
             fullWidth
-            value={question.corrAnswer}
-            onChange={(e) =>
-              onQuestionChange(index, "corrAnswer", e.target.value)
-            }
+            multiline
+            value={(question.options ?? []).join(", ")}
+            onChange={(e) => {
+              const newOptions = e.target.value
+                .split(",")
+                .map((opt) => opt.trim());
+              onQuestionChange(index, "options", newOptions);
+            }}
+            helperText='Enter right-side matches only, separated by commas. Example: "Round Shape, Four-sided Shape"'
             sx={{ mb: 2 }}
           />
-        )}
+
+          <CorrectAnswerComponent
+            type={question.type}
+            corrAnswer={question.corrAnswer}
+            onChange={(value) => onQuestionChange(index, "corrAnswer", value)}
+          />
+        </>
+      )}
     </Box>
   );
 };
