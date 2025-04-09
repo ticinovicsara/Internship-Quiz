@@ -49,6 +49,14 @@ export const AdminButton = () => {
         >
           Add Category
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            navigate(paths.USER_SCORES);
+          }}
+        >
+          User Scores List
+        </MenuItem>
       </Menu>
     </>
   );

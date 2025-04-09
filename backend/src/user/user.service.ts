@@ -14,12 +14,12 @@ export class UserService {
     return this.prisma.user.findMany({});
   }
 
-  async getLeaderboard(quizId: string) {
+  async getLeaderboardForQuiz(quizId: string) {
     const scores = await this.prisma.score.findMany({
       where: { quizId },
       include: {
         user: {
-          select: { username: true, scores: true },
+          select: { username: true },
         },
       },
       orderBy: {
@@ -27,10 +27,54 @@ export class UserService {
       },
     });
 
-    return scores.map((score) => ({
+    const leaderboard = scores.map((score) => ({
       username: score.user.username,
       points: score.points,
     }));
+
+    return leaderboard;
+  }
+
+  async getFullLeaderboard() {
+    const scores = await this.prisma.score.findMany({
+      include: {
+        user: {
+          select: { username: true },
+        },
+        quiz: {
+          select: { id: true, title: true },
+        },
+      },
+      orderBy: {
+        points: 'desc',
+      },
+    });
+
+    const userScores: Record<string, Record<string, number>> = {};
+
+    scores.forEach((score) => {
+      if (!userScores[score.user.username]) {
+        userScores[score.user.username] = {};
+      }
+      userScores[score.user.username][score.quiz.title] = score.points;
+    });
+
+    const leaderboard = Object.entries(userScores).map(
+      ([username, quizzes]) => {
+        const totalPoints = Object.values(
+          quizzes as Record<string, number>,
+        ).reduce((sum, points) => sum + points, 0);
+        return {
+          username,
+          quizzes,
+          totalPoints,
+        };
+      },
+    );
+
+    leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
+
+    return leaderboard;
   }
 
   async register(data: RegisterUserDto) {

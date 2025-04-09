@@ -1,15 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { TextField, Button, MenuItem, Box, Typography } from "@mui/material";
 import { useCategories } from "../hooks/useCategories";
-import { Category } from "../types/category";
 import { createQuiz } from "../services/createQuiz";
 import { toast } from "react-toastify";
-import { CreateQuizType } from "../types/createQuiz";
-import { Question } from "../types/question";
 import { QuestionForm } from "../components/QuestionForm";
 import { Navigation } from "../components/Navigation";
 import { initialQuestions } from "../utils/initialQuestions";
-import { QuestionType } from "../types/questionType";
+import { Question, Category, QuestionType, CreateQuizType } from "../types";
 
 export function AddQuizPage() {
   const [, setLoading] = useState(false);
@@ -18,12 +15,6 @@ export function AddQuizPage() {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [category, setCategory] = useState<Category | null>(null);
   const { categories } = useCategories();
-
-  useEffect(() => {
-    if (categories.length > 0) {
-      console.log("Fetched Categories: ", categories);
-    }
-  }, [categories]);
 
   const handleQuestionChange = useCallback(
     (index: number, field: string, value: any) => {

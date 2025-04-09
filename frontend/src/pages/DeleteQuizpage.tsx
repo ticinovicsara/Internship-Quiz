@@ -29,15 +29,11 @@ export const DeleteQuizPage = () => {
 
   const handleDeleteQuizzes = async () => {
     try {
-      console.log("Brisanje kvizova sa ID-ovima: ", selectedQuizzes);
-
       for (const quizId of selectedQuizzes) {
-        const response = await deleteQuiz(quizId);
-        console.log(`Kviz sa ID-jem ${quizId} je uspešno obrisan.`, response);
+        await deleteQuiz(quizId);
       }
 
       toast.error("Quiz(zes) successfully deleted");
-
       const updatedQuizzes = await fetchQuizzes();
       setQuizzes(updatedQuizzes);
     } catch (error) {

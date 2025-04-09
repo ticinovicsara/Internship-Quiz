@@ -14,6 +14,7 @@ import paths from "./utils/paths";
 import { useEffect } from "react";
 import { isAuthenticated } from "./utils/auth";
 import AdminRoute from "./components/AdminRoute";
+import UserScoresPage from "./pages/UserScoresPage";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const AppRoutes = () => {
         <Route path={paths.ADD_QUIZ} element={<AddQuizPage />} />
         <Route path={paths.ADD_CATEGORY} element={<AddCategoryPage />} />
         <Route path={paths.DELETE_QUIZ} element={<DeleteQuizPage />} />
+        <Route path={paths.USER_SCORES} element={<UserScoresPage />} />
       </Route>
 
       <Route path={paths.NOTFOUND} element={<NotFoundPage />} />

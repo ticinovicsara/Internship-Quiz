@@ -6,6 +6,7 @@ const paths = {
   ADD_QUIZ: "/addquiz",
   ADD_CATEGORY: "/addcategory",
   DELETE_QUIZ: "/deletequiz",
+  USER_SCORES: "/user-scores",
   NOTFOUND: "/404",
   OTHER: "/404",
 };

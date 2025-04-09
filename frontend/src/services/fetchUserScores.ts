@@ -1,8 +1,8 @@
 import apiClient from "./apiClient";
 
-export async function fetchUserScores() {
+export async function fetchUserScoresByQuiz(quizId: string) {
   try {
-    const response = await apiClient.get("/users/leaderboard");
+    const response = await apiClient.get(`/users/leaderboard/${quizId}`);
 
     console.log("Fetched user leaderboard:", response.data);
 

@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -16,6 +17,8 @@ import {
   UpdateUserDto,
 } from './dto';
 import { UserService } from './user.service';
+import { AdminGuard } from 'src/auth/admin.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -28,8 +31,14 @@ export class UserController {
   }
 
   @Get('/leaderboard/:quizId')
-  getLeaderboard(@Param('quizId') quizId: string) {
-    return this.userService.getLeaderboard(quizId);
+  getLeaderboardForQuiz(@Param('quizId') quizId: string) {
+    return this.userService.getLeaderboardForQuiz(quizId);
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Get('/leaderboardfull')
+  getFullLeaderboard() {
+    return this.userService.getFullLeaderboard();
   }
 
   @Get(':id')
