@@ -4,8 +4,6 @@ export async function fetchAllScores() {
   try {
     const response = await apiClient.get("/users/leaderboardfull");
 
-    console.log("Fetched user leaderboard FULL:", response.data);
-
     return response.data;
   } catch (error) {
     console.error("Error fetching FULL leaderboard:", error);

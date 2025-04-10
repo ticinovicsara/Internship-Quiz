@@ -53,7 +53,18 @@ export function QuestionComponent({
 
     cleanedAnswer[item] = value;
 
-    onAnswerChange(question.id, cleanedAnswer);
+    const formatted = parseMatchingAnswer(cleanedAnswer);
+
+    onAnswerChange(question.id, {
+      ...cleanedAnswer,
+      answer: formatted,
+    });
+  };
+
+  const parseMatchingAnswer = (answerObj: Record<string, string>): string[] => {
+    return Object.entries(answerObj)
+      .filter(([key]) => key !== "answer")
+      .map(([key, value]) => `${key}-${value}`);
   };
 
   const handleSliderChange = (_event: Event, newValue: number | number[]) => {
