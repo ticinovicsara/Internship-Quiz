@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { fetchUserScores } from "../services/fetchUserScores";
+import { fetchUserScoresByQuiz } from "../services/fetchUserScoresByQuiz";
 
-export function useUsers() {
+export function useUsers(quizId: string) {
   const [users, setUsers] = useState<{ username: string; score: number }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -9,7 +9,7 @@ export function useUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetchUserScores();
+        const response = await fetchUserScoresByQuiz(quizId);
         setUsers(response);
         setLoading(false);
       } catch (err) {

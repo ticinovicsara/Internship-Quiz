@@ -1,22 +1,30 @@
 import React from "react";
-import { Box, Card, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
-interface User {
+interface UserProps {
   username: string;
   score: number;
 }
 
 interface LeaderboardProps {
-  sortedUsers: User[];
+  sortedUsers: UserProps[];
   score: number;
-  userRank: number;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({
-  sortedUsers,
-  score,
-  userRank,
-}) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ sortedUsers, score }) => {
+  console.log("Current Score:", score);
+
   return (
     <Box
       style={{
@@ -28,9 +36,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
     >
       <Card
         style={{
-          backgroundColor: "#F8DE7E",
-          width: "70vw",
+          backgroundColor: "#e0f7fa",
+          width: "80vw",
           textAlign: "center",
+          padding: "20px",
         }}
       >
         <Typography
@@ -40,19 +49,28 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
         >
           Leaderboard
         </Typography>
-        {sortedUsers.map((user, index) => (
-          <Typography key={index}>
-            {index + 1}. {user.username} - {user.score} points
-          </Typography>
-        ))}
-      </Card>
 
-      <Typography variant="h6" style={{ marginTop: "20px" }}>
-        Your score: {score}
-      </Typography>
-      <Typography variant="h6" style={{ marginTop: "10px" }}>
-        Your Rank: {userRank}
-      </Typography>
+        <TableContainer component={Paper} style={{ width: "100%" }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ fontWeight: "bold" }}>Rank</TableCell>
+                <TableCell style={{ fontWeight: "bold" }}>Username</TableCell>
+                <TableCell style={{ fontWeight: "bold" }}>Score</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sortedUsers.map((user, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell>{score}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
     </Box>
   );
 };

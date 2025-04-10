@@ -9,6 +9,9 @@ import { calculateScore } from "../utils/calculate/calculateScore";
 import { ScoreSection } from "../components/ScoreSection";
 import paths from "../utils/paths";
 import Leaderboard from "../components/Leaderboard";
+import { getUsernameFromToken } from "../utils/getUsername";
+import { postUserResults } from "../services/postUserResults";
+import { fetchUserScoresByQuiz } from "../services/fetchUserScoresByQuiz";
 
 export function QuizPage() {
   const navigate = useNavigate();
@@ -52,12 +55,27 @@ export function QuizPage() {
     handleAnswerChange(questionId, updatedAnswer);
   };
 
-  const finishQuiz = () => {
+  const finishQuiz = async () => {
     const totalScore = quiz ? calculateScore(quiz.questions, userAnswers) : 0;
     setScore(totalScore);
     setQuizStarted(false);
     setQuizFinished(true);
     setUsers(users);
+
+    if (quizId && totalScore > 0) {
+      try {
+        const username = getUsernameFromToken();
+        if (username) {
+          await postUserResults(quizId, username, totalScore);
+        } else {
+          console.error("Username is null. Cannot post user results.");
+        }
+        const leaderboard = await fetchUserScoresByQuiz(quizId);
+        setUsers(leaderboard);
+      } catch (error) {
+        console.error("Error finishing quiz:", error);
+      }
+    }
   };
 
   const goToNextQuestion = () => {
@@ -72,7 +90,6 @@ export function QuizPage() {
   };
 
   const sortedUsers = [...users].sort((a, b) => b.score - a.score);
-  const userRank = sortedUsers.findIndex((user) => user.score === score) + 1;
 
   if (loading) {
     return <Typography>Loading quiz...</Typography>;
@@ -180,13 +197,7 @@ export function QuizPage() {
         </Box>
       )}
 
-      {quizFinished && (
-        <Leaderboard
-          sortedUsers={sortedUsers}
-          score={score}
-          userRank={userRank}
-        />
-      )}
+      {quizFinished && <Leaderboard sortedUsers={sortedUsers} score={score} />}
     </Box>
   );
 }

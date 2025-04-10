@@ -1,12 +1,12 @@
 import apiClient from "./apiClient";
 
-export const postUserReuslts = async (
+export const postUserResults = async (
   quizId: string,
   username: string,
   score: number
 ) => {
   try {
-    const response = await apiClient.post(`/user/scores/${quizId}`, {
+    const response = await apiClient.post(`/users/score/${quizId}`, {
       username,
       score,
     });
