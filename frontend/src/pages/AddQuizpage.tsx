@@ -80,11 +80,7 @@ export function AddQuizPage() {
       return;
     }
 
-    const missingFields = formattedQuestions.some(
-      (q) => !q.text || !q.corrAnswer
-    );
-
-    if (!title || !category || !imageURL || missingFields) {
+    if (!title || !category || !imageURL) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -97,8 +93,6 @@ export function AddQuizPage() {
       imageURL,
       questions: formattedQuestions,
     };
-
-    console.log("Submitting quiz:", quizData);
 
     try {
       setLoading(true);

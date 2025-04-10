@@ -35,10 +35,11 @@ export function QuestionComponent({
     ? JSON.parse(question.options)
     : [];
 
-  const correctAnswers: string[] =
-    typeof question.corrAnswer === "string"
-      ? JSON.parse(question.corrAnswer)
-      : question.corrAnswer;
+  const correctAnswers: string[] = Array.isArray(question.corrAnswer)
+    ? question.corrAnswer
+    : typeof question.corrAnswer === "string"
+    ? [question.corrAnswer] // Pretvori string u array
+    : [];
 
   const itemsToMatch = correctAnswers.map((pair) => pair.split("-")[0]);
 

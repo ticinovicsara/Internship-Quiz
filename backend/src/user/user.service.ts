@@ -29,7 +29,7 @@ export class UserService {
 
     const leaderboard = scores.map((score) => ({
       username: score.user.username,
-      points: score.points,
+      score: score.points,
     }));
 
     return leaderboard;

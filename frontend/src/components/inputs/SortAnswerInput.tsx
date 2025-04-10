@@ -21,19 +21,24 @@ export const SortAnswerInput: React.FC<SortProps> = ({
   };
 
   const [inputValue, setInputValue] = useState<string>("");
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
+    if (touched) return;
+
     const initial = toArray(corrAnswer);
 
     if (initial.length === 0 && options.length > 0) {
-      onChange(options);
-      setInputValue(options.join(", "));
+      const defaultOrder = options;
+      setInputValue(defaultOrder.join(", "));
+      onChange(defaultOrder);
     } else {
       setInputValue(initial.join(", "));
     }
-  }, [corrAnswer, options]);
+  }, [corrAnswer, options, touched]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTouched(true);
     setInputValue(e.target.value);
   };
 

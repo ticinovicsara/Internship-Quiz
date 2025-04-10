@@ -23,8 +23,6 @@ interface LeaderboardProps {
 }
 
 const Leaderboard: React.FC<LeaderboardProps> = ({ sortedUsers, score }) => {
-  console.log("Current Score:", score);
-
   return (
     <Box
       style={{

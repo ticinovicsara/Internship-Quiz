@@ -60,7 +60,6 @@ export function QuizPage() {
     setScore(totalScore);
     setQuizStarted(false);
     setQuizFinished(true);
-    setUsers(users);
 
     if (quizId && totalScore > 0) {
       try {
@@ -70,6 +69,7 @@ export function QuizPage() {
         } else {
           console.error("Username is null. Cannot post user results.");
         }
+
         const leaderboard = await fetchUserScoresByQuiz(quizId);
         setUsers(leaderboard);
       } catch (error) {
