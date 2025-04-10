@@ -25,21 +25,16 @@ export function QuestionComponent({
   onAnswerChange,
   onAnswerSelection,
 }: QuestionComponentProps) {
-  console.log("Question:", question);
-  console.log("options:", question.options);
-  console.log("answer:", question.corrAnswer);
-
   const options: string[] = Array.isArray(question.options)
     ? question.options
     : typeof question.options === "string"
     ? JSON.parse(question.options)
     : [];
 
-  const correctAnswers: string[] = Array.isArray(question.corrAnswer)
-    ? question.corrAnswer
-    : typeof question.corrAnswer === "string"
-    ? [question.corrAnswer] // Pretvori string u array
-    : [];
+  const correctAnswers: string[] =
+    typeof question.corrAnswer === "string"
+      ? JSON.parse(question.corrAnswer)
+      : question.corrAnswer;
 
   const itemsToMatch = correctAnswers.map((pair) => pair.split("-")[0]);
 
@@ -83,10 +78,6 @@ export function QuestionComponent({
 
     onAnswerChange(question.id, { answer: updatedAnswer });
   };
-
-  console.log("Parsed options:", options);
-
-  console.log("UserAnsw: ", userAnswer);
 
   return (
     <Box

@@ -43,7 +43,8 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   const handleCorrAnswerChange = (value: any) => {
     if (question.type === QuestionType.SORT) {
-      onQuestionChange(index, "corrAnswer", Array.isArray(value) ? value : []);
+      const sortedValue = Array.isArray(value) ? value : [];
+      onQuestionChange(index, "corrAnswer", sortedValue);
     } else {
       const stringValue = Array.isArray(value)
         ? value.join(", ")
@@ -52,7 +53,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
     }
 
     if (question.type === QuestionType.MULTIPLE) {
-      const options = Array.isArray(value)
+      const options = Array.isArray(value.options)
         ? value
         : String(value)
             .split(",")
