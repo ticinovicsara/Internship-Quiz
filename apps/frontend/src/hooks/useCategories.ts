@@ -19,7 +19,6 @@ export function useCategories() {
     try {
       setLoading(true);
       const response = await fetchCategories();
-      console.log("API RESPONSE: ", response.data);
       setCategories(response);
       sessionStorage.setItem("categories", JSON.stringify(response));
       setError("");

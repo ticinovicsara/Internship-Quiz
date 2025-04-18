@@ -49,6 +49,7 @@ export const AddCategoryPage = () => {
       }
 
       if (result && result.id) {
+        sessionStorage.removeItem("categories");
         await refetch();
         setCategoryName("");
         setAlertType("success");

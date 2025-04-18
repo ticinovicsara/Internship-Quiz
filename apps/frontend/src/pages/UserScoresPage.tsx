@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchAllScores } from "../services/fetchAllScores";
-import { User } from "../types"; // Prilagodi import ovisno o tipu koji koristiš
+import { User } from "../types";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ const UserScoresPage = () => {
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
-        const data = await fetchAllScores(); // Pretpostavljamo da API vraća leaderboard
+        const data = await fetchAllScores();
         setLeaderboard(data);
       } catch (error) {
         console.error("Error fetching leaderboard data:", error);
@@ -29,8 +29,9 @@ const UserScoresPage = () => {
     loadLeaderboard();
   }, []);
 
-  const quizTitles =
-    leaderboard.length > 0 ? Object.keys(leaderboard[0].quizzes) : [];
+  const quizTitles = Array.from(
+    new Set(leaderboard.flatMap((user) => Object.keys(user.quizzes || {})))
+  );
 
   return (
     <>
@@ -78,7 +79,7 @@ const UserScoresPage = () => {
                   <TableCell>{user.username}</TableCell>
                   {quizTitles.map((quizTitle) => (
                     <TableCell key={quizTitle}>
-                      {user.quizzes[quizTitle] || 0}{" "}
+                      {user.quizzes[quizTitle] || 0}
                     </TableCell>
                   ))}
                   <TableCell>{user.totalPoints}</TableCell>
