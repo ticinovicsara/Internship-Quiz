@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
 
 interface SortProps {
-  corrAnswer: string[] | string;
+  corrAnswer: string;
   options: string[];
-  onChange: (newValue: string[]) => void;
+  onChange: (newValue: string) => void;
 }
 
 export const SortAnswerInput: React.FC<SortProps> = ({
@@ -12,40 +12,20 @@ export const SortAnswerInput: React.FC<SortProps> = ({
   options,
   onChange,
 }) => {
-  const toArray = (val: string | string[]): string[] => {
-    if (Array.isArray(val)) return val;
-    return val
-      .split(",")
-      .map((v) => v.trim())
-      .filter((v) => v !== "");
-  };
+  const initialValue = corrAnswer.trim() ? corrAnswer : options.join(", ");
 
-  const [inputValue, setInputValue] = useState<string>("");
-  const [touched, setTouched] = useState(false);
+  const [inputValue, setInputValue] = useState<string>(initialValue);
 
   useEffect(() => {
-    if (touched) return;
-
-    const initial = toArray(corrAnswer);
-
-    if (initial.length === 0 && options.length > 0) {
-      const defaultOrder = options;
-      setInputValue(defaultOrder.join(", "));
-      onChange(defaultOrder);
-    } else {
-      setInputValue(initial.join(", "));
-    }
-  }, [corrAnswer, options, touched]);
+    setInputValue(corrAnswer.trim() ? corrAnswer : options.join(", "));
+  }, [corrAnswer, options]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTouched(true);
     setInputValue(e.target.value);
   };
 
   const handleBlur = () => {
-    const inputItems = toArray(inputValue);
-    const filtered = inputItems.filter((item) => options.includes(item));
-    onChange(filtered);
+    onChange(inputValue);
   };
 
   return (

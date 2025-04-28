@@ -36,7 +36,13 @@ export function QuestionComponent({
       ? JSON.parse(question.corrAnswer)
       : question.corrAnswer;
 
-  const itemsToMatch = correctAnswers.map((pair) => pair.split("-")[0]);
+  let itemsToMatch: string[] = [];
+  if (
+    question.type === QuestionType.MATCHING &&
+    Array.isArray(correctAnswers)
+  ) {
+    itemsToMatch = correctAnswers.map((pair: string) => pair.split("-")[0]);
+  }
 
   const handleMatchChange = (item: string, value: string) => {
     const currentAnswer = Array.isArray(userAnswer)
@@ -169,14 +175,14 @@ export function QuestionComponent({
                 <ListItemText primary={`${index + 1}. ${option}`} />
                 <ListItemSecondaryAction>
                   <Button
-                    onClick={() => handleSortChange(index, index - 1)} // Move up
+                    onClick={() => handleSortChange(index, index - 1)}
                     disabled={index === 0}
                     size="large"
                   >
                     ↑
                   </Button>
                   <Button
-                    onClick={() => handleSortChange(index, index + 1)} // Move down
+                    onClick={() => handleSortChange(index, index + 1)}
                     disabled={index === options.length - 1}
                     size="large"
                   >

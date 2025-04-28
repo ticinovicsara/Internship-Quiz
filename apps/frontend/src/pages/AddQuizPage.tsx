@@ -94,6 +94,8 @@ export function AddQuizPage() {
       questions: formattedQuestions,
     };
 
+    console.log("POST QUIZ DATA", quizData);
+
     try {
       setLoading(true);
       const response = await createQuiz(quizData);

@@ -18,6 +18,14 @@ export class CreateQuizDto {
   categoryName: string;
 
   @ApiProperty({
+    example: 'https://example.com/image.jpg',
+    description: 'Image URL for the quiz',
+  })
+  @IsString()
+  @IsNotEmpty()
+  imageURL: string;
+
+  @ApiProperty({
     type: [CreateQuestionDto],
     description: 'Array of quiz questions',
   })

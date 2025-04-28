@@ -5,7 +5,11 @@ import { QuestionForm } from "./QuestionForm";
 interface Props {
   questions: Question[];
   onQuestionChange: (index: number, field: string, value: any) => void;
-  onOptionChange: (index: number, optionIndex: number, value: string) => void;
+  onOptionChange: (
+    index: number,
+    optionIndex: number,
+    value: string | string[]
+  ) => void;
 }
 
 export function QuestionFormList({
@@ -19,17 +23,12 @@ export function QuestionFormList({
         Questions
       </Typography>
       {questions.map((question, index) => (
-        <Box key={index} sx={{ mb: 3 }}>
-          <Typography variant="subtitle1" sx={{ mb: 1 }}>
-            Question {index + 1}
-          </Typography>
-          <QuestionForm
-            question={question}
-            index={index}
-            onQuestionChange={onQuestionChange}
-            onOptionChange={onOptionChange}
-          />
-        </Box>
+        <QuestionForm
+          question={question}
+          index={index}
+          onQuestionChange={onQuestionChange}
+          onOptionChange={onOptionChange}
+        />
       ))}
     </Box>
   );

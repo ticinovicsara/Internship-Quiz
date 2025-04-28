@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Typography, Button, Box } from "@mui/material";
 import { useQuiz } from "../hooks/useQuiz";
-import { QuestionComponent } from "../components/QuestionComponent";
+import { QuestionComponent } from "../components/QuizQuestion";
 import { Navigation } from "../components/Navigation";
 import { QuestionHeader } from "../components/QuestionHeader";
 import { calculateScore } from "../utils/calculate/calculateScore";

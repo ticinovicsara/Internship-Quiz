@@ -84,6 +84,7 @@ export class QuizService {
       data: {
         title: data.title,
         categoryId: categoryId,
+        imageURL: data.imageURL,
         questions: {
           create: data.questions.map((question) => ({
             text: question.text,

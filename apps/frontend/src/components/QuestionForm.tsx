@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   TextField,
   MenuItem,
@@ -29,36 +29,61 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   question,
   index,
   onQuestionChange,
-  onOptionChange,
 }) => {
   const handleOptionChange = (
     optionIndex: number,
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    onOptionChange(index, optionIndex, e.target.value);
+    const value = e.target.value;
+    const newOptions = question.options?.map((opt, idx) =>
+      idx === optionIndex ? value : opt
+    );
+    onQuestionChange(index, "options", newOptions);
   };
 
-  const handleMatchingChange = (newValue: string[]) =>
-    onQuestionChange(index, "corrAnswer", newValue);
+  const handleMatchingChange = (newPairs: string[]) => {
+    onQuestionChange(index, "corrAnswer", newPairs);
+
+    const rightOptions = newPairs.map(
+      (pair) => pair.split("-")[1]?.trim() ?? ""
+    );
+    onQuestionChange(index, "options", rightOptions);
+  };
 
   const handleCorrAnswerChange = (value: any) => {
     if (question.type === QuestionType.SORT) {
-      const sortedValue = Array.isArray(value) ? value : [];
-      onQuestionChange(index, "corrAnswer", sortedValue);
+      if (typeof value === "string") {
+        onQuestionChange(index, "corrAnswer", value);
+        const parsedOptions = value.split(",").map((v) => v.trim());
+        onQuestionChange(index, "options", parsedOptions);
+      }
+    } else if (question.type === QuestionType.MULTIPLE) {
+      if (typeof value === "string") {
+        const options = value.split(",").map((v: string) => v.trim());
+        onQuestionChange(index, "corrAnswer", value);
+        onQuestionChange(index, "options", options);
+      }
     } else {
       const stringValue = Array.isArray(value)
         ? value.join(", ")
         : String(value);
       onQuestionChange(index, "corrAnswer", stringValue);
     }
+  };
 
+  useEffect(() => {
     if (question.type === QuestionType.MULTIPLE) {
-      const options = Array.isArray(value.options)
-        ? value
-        : String(value)
-            .split(",")
-            .map((v) => v.trim());
-      onQuestionChange(index, "options", options);
+      ensureMinimumOptions(4);
+    }
+  }, [question.type]);
+
+  const ensureMinimumOptions = (minCount: number) => {
+    if ((question.options?.length ?? 0) < minCount) {
+      const filledOptions = [...(question.options ?? [])];
+      while (filledOptions.length < minCount) {
+        filledOptions.push("");
+      }
+      onQuestionChange(index, "options", filledOptions);
     }
   };
 
@@ -122,6 +147,14 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         </>
       )}
 
+      {question.type === QuestionType.SORT && (
+        <SortAnswerInput
+          corrAnswer={question.corrAnswer as string}
+          options={Array.isArray(question.options) ? question.options : []}
+          onChange={handleCorrAnswerChange}
+        />
+      )}
+
       {question.type === QuestionType.SLIDER && (
         <>
           <SliderAnswerInput
@@ -129,14 +162,6 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             onChange={handleCorrAnswerChange}
           />
         </>
-      )}
-
-      {question.type === QuestionType.SORT && (
-        <SortAnswerInput
-          corrAnswer={question.corrAnswer}
-          options={question.options ?? []}
-          onChange={handleCorrAnswerChange}
-        />
       )}
 
       {question.type === QuestionType.MATCHING && (
@@ -149,7 +174,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             onChange={(e) => {
               const newOptions = e.target.value
                 .split(",")
-                .map((opt) => opt.trim());
+                .map((opt) => opt.trimStart());
               onQuestionChange(index, "options", newOptions);
             }}
             helperText='Enter right-side matches only, separated by commas. Example: "Round Shape, Four-sided Shape"'
