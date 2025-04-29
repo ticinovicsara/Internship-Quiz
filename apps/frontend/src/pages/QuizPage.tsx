@@ -66,12 +66,11 @@ export function QuizPage() {
         const username = getUsernameFromToken();
         if (username) {
           await postUserResults(quizId, username, totalScore);
+          const leaderboard = await fetchUserScoresByQuiz(quizId);
+          setUsers(leaderboard);
         } else {
           console.error("Username is null. Cannot post user results.");
         }
-
-        const leaderboard = await fetchUserScoresByQuiz(quizId);
-        setUsers(leaderboard);
       } catch (error) {
         console.error("Error finishing quiz:", error);
       }

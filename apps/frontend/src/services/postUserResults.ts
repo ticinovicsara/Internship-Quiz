@@ -10,6 +10,9 @@ export const postUserResults = async (
       username,
       score,
     });
+
+    console.log("Submitted quiz results:", response.data);
+
     return response.data;
   } catch (error) {
     console.error("Error submitting quiz results:", error);
