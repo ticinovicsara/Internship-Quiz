@@ -1,7 +1,8 @@
 {
   "packageManager": "npm@10.8.2",
   "dependencies": {
-    "turbo": "^2.5.0"
+    "turbo": "^2.5.0",
+    "yarn": "^1.22.22"
   },
   "scripts": {
     "dev": "turbo run dev",
